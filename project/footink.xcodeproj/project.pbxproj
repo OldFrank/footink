@@ -129,7 +129,6 @@
 		5DAE23F213D212600036BED5 /* MapLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE23A313D212600036BED5 /* MapLocation.m */; };
 		5DAE23F313D212600036BED5 /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE23A513D212600036BED5 /* MapViewController.m */; };
 		5DAE23F413D212600036BED5 /* MKMapView-CoordsDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE23A713D212600036BED5 /* MKMapView-CoordsDisplay.m */; };
-		5DAE23F513D212600036BED5 /* openGLEA.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE23A913D212600036BED5 /* openGLEA.m */; };
 		5DAE23F613D212600036BED5 /* pagingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE23AB13D212600036BED5 /* pagingViewController.m */; };
 		5DAE23F713D212600036BED5 /* PhotoCalCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE23AD13D212600036BED5 /* PhotoCalCell.m */; };
 		5DAE23F813D212600036BED5 /* photoDetailCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE23AF13D212600036BED5 /* photoDetailCellView.m */; };
@@ -357,8 +356,6 @@
 		5DAE23A513D212600036BED5 /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MapViewController.m; path = photoPicker/MapViewController.m; sourceTree = "<group>"; };
 		5DAE23A613D212600036BED5 /* MKMapView-CoordsDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MKMapView-CoordsDisplay.h"; path = "photoPicker/MKMapView-CoordsDisplay.h"; sourceTree = "<group>"; };
 		5DAE23A713D212600036BED5 /* MKMapView-CoordsDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MKMapView-CoordsDisplay.m"; path = "photoPicker/MKMapView-CoordsDisplay.m"; sourceTree = "<group>"; };
-		5DAE23A813D212600036BED5 /* openGLEA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = openGLEA.h; path = photoPicker/openGLEA.h; sourceTree = "<group>"; };
-		5DAE23A913D212600036BED5 /* openGLEA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = openGLEA.m; path = photoPicker/openGLEA.m; sourceTree = "<group>"; };
 		5DAE23AA13D212600036BED5 /* pagingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pagingViewController.h; path = photoPicker/pagingViewController.h; sourceTree = "<group>"; };
 		5DAE23AB13D212600036BED5 /* pagingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = pagingViewController.m; path = photoPicker/pagingViewController.m; sourceTree = "<group>"; };
 		5DAE23AC13D212600036BED5 /* PhotoCalCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhotoCalCell.h; path = photoPicker/PhotoCalCell.h; sourceTree = "<group>"; };
@@ -475,6 +472,96 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5D04BDF113D242EB00F767AC /* setting */ = {
+			isa = PBXGroup;
+			children = (
+				5DAE239D13D212600036BED5 /* LoginView.h */,
+				5DAE239E13D212600036BED5 /* LoginView.m */,
+				5DAE237F13D2123D0036BED5 /* FacebookAPIViewController.h */,
+				5DAE238013D2123D0036BED5 /* FacebookAPIViewController.m */,
+				5DAE23CD13D212600036BED5 /* SettingCell.h */,
+				5DAE23CE13D212600036BED5 /* SettingCell.m */,
+				5DAE23CF13D212600036BED5 /* SettingView.h */,
+				5DAE23D013D212600036BED5 /* SettingView.m */,
+			);
+			name = setting;
+			sourceTree = "<group>";
+		};
+		5D04BDF213D2430700F767AC /* friends */ = {
+			isa = PBXGroup;
+			children = (
+				5DAE237813D2123D0036BED5 /* CircleMenu.h */,
+				5DAE237913D2123D0036BED5 /* CircleMenu.m */,
+				5DAE23E513D212600036BED5 /* withAddView.h */,
+				5DAE23E613D212600036BED5 /* withAddView.m */,
+				5DAE23E713D212600036BED5 /* withCircle.h */,
+				5DAE23E813D212600036BED5 /* withCircle.m */,
+				5DAE23E913D212600036BED5 /* withRootCell.h */,
+				5DAE23EA13D212600036BED5 /* withRootCell.m */,
+				5DAE23EB13D212600036BED5 /* withRootView.h */,
+				5DAE23EC13D212600036BED5 /* withRootView.m */,
+				5DAE23ED13D212600036BED5 /* withViewcontroller.h */,
+				5DAE23EE13D212600036BED5 /* withViewcontroller.m */,
+			);
+			name = friends;
+			sourceTree = "<group>";
+		};
+		5D04BDF313D2439900F767AC /* feed */ = {
+			isa = PBXGroup;
+			children = (
+				5DAE23AC13D212600036BED5 /* PhotoCalCell.h */,
+				5DAE23AD13D212600036BED5 /* PhotoCalCell.m */,
+				5DAE23AE13D212600036BED5 /* photoDetailCellView.h */,
+				5DAE23AF13D212600036BED5 /* photoDetailCellView.m */,
+				5DAE23B013D212600036BED5 /* photoDetailView.h */,
+				5DAE23B113D212600036BED5 /* photoDetailView.m */,
+				5DAE23B213D212600036BED5 /* PhotoLargeCell.h */,
+				5DAE23B313D212600036BED5 /* PhotoLargeCell.m */,
+				5DAE23B813D212600036BED5 /* PhotoRoot.h */,
+				5DAE23B913D212600036BED5 /* PhotoRoot.m */,
+				5DAE23BA13D212600036BED5 /* PhotoRootCellBtn.h */,
+				5DAE23BB13D212600036BED5 /* PhotoRootCellBtn.m */,
+				5DAE23BC13D212600036BED5 /* photoViewController.h */,
+				5DAE23BD13D212600036BED5 /* photoViewController.m */,
+				5DAE23BE13D212600036BED5 /* photoViewController.xib */,
+			);
+			name = feed;
+			sourceTree = "<group>";
+		};
+		5D04BDF413D243F400F767AC /* personal */ = {
+			isa = PBXGroup;
+			children = (
+				5DAE23C113D212600036BED5 /* ProfileViewController.h */,
+				5DAE23C213D212600036BED5 /* ProfileViewController.m */,
+			);
+			name = personal;
+			sourceTree = "<group>";
+		};
+		5D04BDF513D2444F00F767AC /* utilClass */ = {
+			isa = PBXGroup;
+			children = (
+				5DAE23BF13D212600036BED5 /* PopAlertView.h */,
+				5DAE23C013D212600036BED5 /* PopAlertView.m */,
+				5DAE22E013D210BE0036BED5 /* EGORefreshTableHeaderView.h */,
+				5DAE237A13D2123D0036BED5 /* CustomTabbar.h */,
+				5DAE23C313D212600036BED5 /* Reachability.h */,
+				5DAE23C413D212600036BED5 /* Reachability.m */,
+				5DAE237B13D2123D0036BED5 /* CustomTabbar.m */,
+				5DAE23D113D212600036BED5 /* SlidingTab.h */,
+				5DAE23D213D212600036BED5 /* SlidingTab.m */,
+				5DAE23D313D212600036BED5 /* SlidingTabView.h */,
+				5DAE23D413D212600036BED5 /* SlidingTabView.m */,
+				5DAE23E313D212600036BED5 /* UIImageView+AsyncAndCache.h */,
+				5DAE23E413D212600036BED5 /* UIImageView+AsyncAndCache.m */,
+				5DAE238413D2123D0036BED5 /* GlobalStn.h */,
+				5DAE238513D2123D0036BED5 /* GlobalStn.m */,
+				5DAE238613D2123D0036BED5 /* gradientView.h */,
+				5DAE238713D2123D0036BED5 /* gradientView.m */,
+				5DAE22E113D210BE0036BED5 /* EGORefreshTableHeaderView.m */,
+			);
+			name = utilClass;
+			sourceTree = "<group>";
+		};
 		5DAE226813D20FBA0036BED5 = {
 			isa = PBXGroup;
 			children = (
@@ -528,91 +615,21 @@
 				5DAE22D513D210BE0036BED5 /* EGOImageButton */,
 				5DAE22D813D210BE0036BED5 /* EGOImageLoader */,
 				5DAE22DD13D210BE0036BED5 /* EGOImageView */,
-				5DAE22E013D210BE0036BED5 /* EGORefreshTableHeaderView.h */,
-				5DAE236613D212030036BED5 /* scanbutton.png */,
 				5DAE236813D2123D0036BED5 /* AddViewController.h */,
 				5DAE236913D2123D0036BED5 /* AddViewController.m */,
-				5DAE239D13D212600036BED5 /* LoginView.h */,
-				5DAE239E13D212600036BED5 /* LoginView.m */,
 				5DAE241B13D2126D0036BED5 /* spot */,
-				5DAE23A813D212600036BED5 /* openGLEA.h */,
-				5DAE23A913D212600036BED5 /* openGLEA.m */,
 				5DAE23AA13D212600036BED5 /* pagingViewController.h */,
 				5DAE23AB13D212600036BED5 /* pagingViewController.m */,
-				5DAE23AC13D212600036BED5 /* PhotoCalCell.h */,
-				5DAE23AD13D212600036BED5 /* PhotoCalCell.m */,
-				5DAE23AE13D212600036BED5 /* photoDetailCellView.h */,
-				5DAE23AF13D212600036BED5 /* photoDetailCellView.m */,
-				5DAE23B013D212600036BED5 /* photoDetailView.h */,
-				5DAE23B113D212600036BED5 /* photoDetailView.m */,
-				5DAE23B213D212600036BED5 /* PhotoLargeCell.h */,
-				5DAE23B313D212600036BED5 /* PhotoLargeCell.m */,
-				5DAE23B613D212600036BED5 /* photoPickerViewController.h */,
-				5DAE23B713D212600036BED5 /* photoPickerViewController.m */,
-				5DAE23B813D212600036BED5 /* PhotoRoot.h */,
-				5DAE23B913D212600036BED5 /* PhotoRoot.m */,
-				5DAE23BA13D212600036BED5 /* PhotoRootCellBtn.h */,
-				5DAE23BB13D212600036BED5 /* PhotoRootCellBtn.m */,
-				5DAE23BC13D212600036BED5 /* photoViewController.h */,
-				5DAE23BD13D212600036BED5 /* photoViewController.m */,
-				5DAE23BE13D212600036BED5 /* photoViewController.xib */,
-				5DAE23BF13D212600036BED5 /* PopAlertView.h */,
-				5DAE23C013D212600036BED5 /* PopAlertView.m */,
-				5DAE23C113D212600036BED5 /* ProfileViewController.h */,
-				5DAE23C213D212600036BED5 /* ProfileViewController.m */,
-				5DAE23C313D212600036BED5 /* Reachability.h */,
-				5DAE23C413D212600036BED5 /* Reachability.m */,
+				5D04BDF413D243F400F767AC /* personal */,
+				5D04BDF313D2439900F767AC /* feed */,
 				5DAE23C513D212600036BED5 /* route.csv */,
-				5DAE23CD13D212600036BED5 /* SettingCell.h */,
-				5DAE23CE13D212600036BED5 /* SettingCell.m */,
-				5DAE23CF13D212600036BED5 /* SettingView.h */,
-				5DAE23D013D212600036BED5 /* SettingView.m */,
-				5DAE23D113D212600036BED5 /* SlidingTab.h */,
-				5DAE23D213D212600036BED5 /* SlidingTab.m */,
-				5DAE23D313D212600036BED5 /* SlidingTabView.h */,
-				5DAE23D413D212600036BED5 /* SlidingTabView.m */,
-				5DAE23D513D212600036BED5 /* SpotCategoryView.h */,
-				5DAE23D613D212600036BED5 /* SpotCategoryView.m */,
-				5DAE23D713D212600036BED5 /* SpotInkletSubmit.h */,
-				5DAE23D813D212600036BED5 /* SpotInkletSubmit.m */,
-				5DAE23D913D212600036BED5 /* SpotListViewController.h */,
-				5DAE23DA13D212600036BED5 /* SpotListViewController.m */,
-				5DAE23DB13D212600036BED5 /* SpotSubmitView.h */,
-				5DAE23DC13D212600036BED5 /* SpotSubmitView.m */,
-				5DAE23DF13D212600036BED5 /* tripMapRouteViewController.h */,
-				5DAE23E013D212600036BED5 /* tripMapRouteViewController.m */,
-				5DAE23E113D212600036BED5 /* tripMapViewController.h */,
-				5DAE23E213D212600036BED5 /* tripMapViewController.m */,
-				5DAE23E313D212600036BED5 /* UIImageView+AsyncAndCache.h */,
-				5DAE23E413D212600036BED5 /* UIImageView+AsyncAndCache.m */,
-				5DAE23E513D212600036BED5 /* withAddView.h */,
-				5DAE23E613D212600036BED5 /* withAddView.m */,
-				5DAE23E713D212600036BED5 /* withCircle.h */,
-				5DAE23E813D212600036BED5 /* withCircle.m */,
-				5DAE23E913D212600036BED5 /* withRootCell.h */,
-				5DAE23EA13D212600036BED5 /* withRootCell.m */,
-				5DAE23EB13D212600036BED5 /* withRootView.h */,
-				5DAE23EC13D212600036BED5 /* withRootView.m */,
-				5DAE23ED13D212600036BED5 /* withViewcontroller.h */,
-				5DAE23EE13D212600036BED5 /* withViewcontroller.m */,
+				5D04BDF113D242EB00F767AC /* setting */,
+				5D04BDF513D2444F00F767AC /* utilClass */,
 				5DAE241C13D212A50036BED5 /* camera */,
-				5DAE237813D2123D0036BED5 /* CircleMenu.h */,
-				5DAE237913D2123D0036BED5 /* CircleMenu.m */,
-				5DAE237A13D2123D0036BED5 /* CustomTabbar.h */,
-				5DAE237B13D2123D0036BED5 /* CustomTabbar.m */,
+				5D04BDF213D2430700F767AC /* friends */,
 				5DAE237C13D2123D0036BED5 /* data.plist */,
 				5DAE237D13D2123D0036BED5 /* DetailsViewController.h */,
 				5DAE237E13D2123D0036BED5 /* DetailsViewController.m */,
-				5DAE237F13D2123D0036BED5 /* FacebookAPIViewController.h */,
-				5DAE238013D2123D0036BED5 /* FacebookAPIViewController.m */,
-				5DAE238113D2123D0036BED5 /* FindMeViewController.h */,
-				5DAE238213D2123D0036BED5 /* FindMeViewController.m */,
-				5DAE238313D2123D0036BED5 /* FindMeViewController.xib */,
-				5DAE238413D2123D0036BED5 /* GlobalStn.h */,
-				5DAE238513D2123D0036BED5 /* GlobalStn.m */,
-				5DAE238613D2123D0036BED5 /* gradientView.h */,
-				5DAE238713D2123D0036BED5 /* gradientView.m */,
-				5DAE22E113D210BE0036BED5 /* EGORefreshTableHeaderView.m */,
 				5DAE235F13D211970036BED5 /* JSON */,
 				5DAE234313D211470036BED5 /* FB */,
 				5DAE22D113D210810036BED5 /* images */,
@@ -636,6 +653,7 @@
 		5DAE22D113D210810036BED5 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				5DAE236613D212030036BED5 /* scanbutton.png */,
 				5DAE23DD13D212600036BED5 /* TabBarNipple.png */,
 				5DAE23DE13D212600036BED5 /* TabBarNipple@2x.png */,
 				5DAE236A13D2123D0036BED5 /* alertBack.png */,
@@ -803,6 +821,9 @@
 		5DAE241B13D2126D0036BED5 /* spot */ = {
 			isa = PBXGroup;
 			children = (
+				5DAE238113D2123D0036BED5 /* FindMeViewController.h */,
+				5DAE238213D2123D0036BED5 /* FindMeViewController.m */,
+				5DAE238313D2123D0036BED5 /* FindMeViewController.xib */,
 				5DAE237413D2123D0036BED5 /* Branche.h */,
 				5DAE237513D2123D0036BED5 /* Branche.m */,
 				5DAE237613D2123D0036BED5 /* BrancheAnnotation.h */,
@@ -824,6 +845,18 @@
 				5DAE23CA13D212600036BED5 /* SearchBrancheViewController.xib */,
 				5DAE23CB13D212600036BED5 /* SearchListCellView.h */,
 				5DAE23CC13D212600036BED5 /* SearchListCellView.m */,
+				5DAE23D513D212600036BED5 /* SpotCategoryView.h */,
+				5DAE23D613D212600036BED5 /* SpotCategoryView.m */,
+				5DAE23D713D212600036BED5 /* SpotInkletSubmit.h */,
+				5DAE23D813D212600036BED5 /* SpotInkletSubmit.m */,
+				5DAE23D913D212600036BED5 /* SpotListViewController.h */,
+				5DAE23DA13D212600036BED5 /* SpotListViewController.m */,
+				5DAE23DB13D212600036BED5 /* SpotSubmitView.h */,
+				5DAE23DC13D212600036BED5 /* SpotSubmitView.m */,
+				5DAE23DF13D212600036BED5 /* tripMapRouteViewController.h */,
+				5DAE23E013D212600036BED5 /* tripMapRouteViewController.m */,
+				5DAE23E113D212600036BED5 /* tripMapViewController.h */,
+				5DAE23E213D212600036BED5 /* tripMapViewController.m */,
 			);
 			name = spot;
 			sourceTree = "<group>";
@@ -831,6 +864,8 @@
 		5DAE241C13D212A50036BED5 /* camera */ = {
 			isa = PBXGroup;
 			children = (
+				5DAE23B613D212600036BED5 /* photoPickerViewController.h */,
+				5DAE23B713D212600036BED5 /* photoPickerViewController.m */,
 				5DAE236C13D2123D0036BED5 /* AVCamRecorder.h */,
 				5DAE236D13D2123D0036BED5 /* AVCamRecorder.m */,
 				5DAE236E13D2123D0036BED5 /* AVCamUtilities.h */,
@@ -1024,7 +1059,6 @@
 				5DAE23F213D212600036BED5 /* MapLocation.m in Sources */,
 				5DAE23F313D212600036BED5 /* MapViewController.m in Sources */,
 				5DAE23F413D212600036BED5 /* MKMapView-CoordsDisplay.m in Sources */,
-				5DAE23F513D212600036BED5 /* openGLEA.m in Sources */,
 				5DAE23F613D212600036BED5 /* pagingViewController.m in Sources */,
 				5DAE23F713D212600036BED5 /* PhotoCalCell.m in Sources */,
 				5DAE23F813D212600036BED5 /* photoDetailCellView.m in Sources */,
