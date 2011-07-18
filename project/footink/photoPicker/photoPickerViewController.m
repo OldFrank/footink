@@ -13,6 +13,8 @@
 #import <CFNetwork/CFNetwork.h>
 #import "GlobalStn.h"
 #import "Reachability.h"
+#import "photoEditController.h"
+
 static void *AVCamFocusModeObserverContext = &AVCamFocusModeObserverContext;
 
 @interface photoPickerViewController () <UIGestureRecognizerDelegate>
@@ -32,17 +34,15 @@ static void *AVCamFocusModeObserverContext = &AVCamFocusModeObserverContext;
 
 @implementation photoPickerViewController
 
-@synthesize imgPicker,imageview,scanModal,scanView,cAlertView;
+@synthesize imgPicker,scanModal;
 @synthesize captureManager;
 @synthesize scanningLabel;
-@synthesize returnData;
+
 @synthesize cameraToggleButton;
 @synthesize recordButton;
 @synthesize focusModeLabel;
 @synthesize videoPreviewView,captureVideoPreviewLayer;
 
-@synthesize ProgressBar;
-@synthesize ProgressLabel,_thread,urlConnection;
 
 BOOL gLogging = FALSE;
 
@@ -85,24 +85,30 @@ BOOL gLogging = FALSE;
         [self AVModal];
         [[UIApplication sharedApplication] setStatusBarHidden:YES];
         [[GlobalStn sharedSingleton] setPickerChk:0];
-        
-    }else{ // close버튼
+    }else if((int)[[GlobalStn sharedSingleton] pickerChk]==3){ // 카메라 촬영 이후 진입
+        [[GlobalStn sharedSingleton] setPickerChk:1];
         [[UIApplication sharedApplication] setStatusBarHidden:NO];
+        self.tabBarController.tabBar.hidden = NO;
+        self.tabBarController.selectedIndex = 0;
+    }else{ // close버튼
+        
         [[GlobalStn sharedSingleton] setPickerChk:0];
+        [[UIApplication sharedApplication] setStatusBarHidden:NO];
         self.tabBarController.selectedIndex = 0;
     }
 }
 - (void) viewWillDisappear:(BOOL)animated {
-    NSLog(@"removeObserver");
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
+    //if((int)[[GlobalStn sharedSingleton] pickerChk]!=0){
+        NSLog(@"removeObserver");
+        [[NSNotificationCenter defaultCenter] removeObserver:self];
+    //}
 }
 - (void)dealloc
 {
+    NSLog(@"dealloc");
     [captureManager release];
     captureManager=nil;
-    [imageview release];
-    imageview=nil;
+
     [scanModal release];
     scanModal=nil;
     [imgPicker release], imgPicker=nil;
@@ -110,10 +116,9 @@ BOOL gLogging = FALSE;
     [videoPreviewView release];
 	[captureVideoPreviewLayer release];
     [scanningLabel release];
-    [ProgressBar release], ProgressBar = nil;
-    
-    [returnData release];
-    [_thread release], _thread=nil;
+
+
+
 
     [super dealloc];
 }
@@ -144,16 +149,17 @@ BOOL gLogging = FALSE;
 }
 -(void)AVModal
 {
-    if ([self captureManager] == nil) {
-        AvCaptureManager *manager = [[AvCaptureManager alloc] init];
-		[self setCaptureManager:manager];
-		[manager release];
+    if (self.captureManager == nil) {
+        
+		[self setCaptureManager:[[AvCaptureManager alloc] init]];
+		
     }
     [[self captureManager] setDelegate:self];
     
     if ([[self captureManager] setupSession]) {
         [[UIApplication sharedApplication] setStatusBarHidden:YES];
         AVCaptureVideoPreviewLayer *newCaptureVideoPreviewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:[[self captureManager] avsession]];
+        
         scanModal = [[UIViewController alloc] init];
         
         CALayer *viewLayer = [scanModal.view layer];
@@ -295,124 +301,6 @@ BOOL gLogging = FALSE;
     [scanModal presentModalViewController:self.imgPicker animated:YES];
 
 }
-- (UIImage *)generatePhotoThumbnail:(UIImage *)image withRatio:(float)ratio {
-
-    // 레티나 예외처리
-    if (UIGraphicsBeginImageContextWithOptions != NULL) {
-        UIGraphicsBeginImageContextWithOptions(CGSizeMake(ratio,ratio),NO,0.0);
-    } else {
-        UIGraphicsBeginImageContext(CGSizeMake(ratio,ratio));
-    }
-    
-    CGContextRef newContext = UIGraphicsGetCurrentContext();
-    
-    switch (image.imageOrientation)
-    {
-        case UIImageOrientationUp:
-            NSLog(@"Up");
-            CGContextTranslateCTM(newContext, 0, 0);
-            CGContextRotateCTM(newContext,0*(M_PI/180));
-        break;
-        case UIImageOrientationRight:
-            NSLog(@"Right");
-            CGContextTranslateCTM(newContext, 300.0, 0);
-            CGContextRotateCTM(newContext,90*(M_PI/180));
-        break;
-        case UIImageOrientationLeft:
-            NSLog(@"Left");
-            CGContextTranslateCTM(newContext, 300, 0);
-            CGContextRotateCTM(newContext,-90*(M_PI/180));
-        break;
-        case UIImageOrientationDown:
-            NSLog(@"Down");
-            CGContextTranslateCTM(newContext, 300, 300);
-            CGContextRotateCTM(newContext,180*(M_PI/180));
-        break;
-        default:
-            NSLog(@"Default");
-        break;
-    }
-    
-    CGRect cropRect;
-
-    CGFloat rat = 0;
-    CGSize size = [image size];
-    
-    int padding = 20;
-    int pictureSize = ratio;
-    int startCroppingPosition = 100;
-    
-    if (size.height > size.width) {
-        pictureSize = size.width - (2.0 * padding);
-        startCroppingPosition = (size.height - pictureSize) / 2.0; 
-    } else {
-        pictureSize = size.height - (2.0 * padding);
-        startCroppingPosition = (size.width - pictureSize) / 2.0;
-    }
-
-    if( image.size.width > image.size.height ) {
-
-       rat = (imageview.frame.size.width / image.size.width) * 4;
-     } else {
-
-       rat = (imageview.frame.size.width / image.size.height) * 4;
-	 }
-    
-    if (image.size.width == image.size.height) {
-        cropRect = CGRectMake(0.0, 0.0, rat*image.size.width, image.size.height);
-    } else if (image.size.width > image.size.height) {
-        cropRect = CGRectMake(0.0, 0.0, rat*image.size.height, image.size.height);
-    } else {
-        cropRect = CGRectMake(startCroppingPosition, padding, pictureSize, pictureSize);
-    }
-    
-    CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], cropRect);
-    
-    UIImage *cropped = [UIImage imageWithCGImage:imageRef  scale:1.0 orientation:image.imageOrientation];
-    CGImageRelease(imageRef);
-
-    NSData *pngData = UIImagePNGRepresentation(cropped);
-    UIImage *ThumbNail    = [[UIImage alloc] initWithData:pngData];
-  
-    [ThumbNail drawInRect:CGRectMake(0.0, 0.0, ratio, ratio)];
-    
-    UIImage *newImage    = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    [ThumbNail release];
-
-    return newImage;
-}
-//이미지 리사이즈
--(UIImage *)resizeImage:(UIImage *)image width:(float)resizeWidth height:(float)resizeHeight{
-    
-    UIGraphicsBeginImageContext(CGSizeMake(resizeWidth, resizeHeight));
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextTranslateCTM(context, 0.0, resizeHeight);
-    CGContextScaleCTM(context, 1.0, -1.0);
-    CGContextDrawImage(context, CGRectMake(0.0, 0.0, resizeWidth, resizeHeight), [image CGImage]);
-    UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return scaledImage;
-}
-
-
-//이미지 마스킹
--(UIImage *)maskingImage:(UIImage *)image maskImage:(NSString *)_maskImage{
-    CGImageRef imageRef = [image CGImage];
-    CGImageRef maskRef = [[UIImage imageNamed:_maskImage] CGImage];
-    CGImageRef mask = CGImageMaskCreate(CGImageGetWidth(maskRef),
-                                        CGImageGetHeight(maskRef),
-                                        CGImageGetBitsPerComponent(maskRef),
-                                        CGImageGetBitsPerPixel(maskRef),
-                                        CGImageGetBytesPerRow(maskRef),
-                                        CGImageGetDataProvider(maskRef),
-                                        NULL, false);
-    CGImageRef masked = CGImageCreateWithMask(imageRef, mask);
-    CGImageRelease(mask);
-    UIImage *maskedImage = [UIImage imageWithCGImage:masked];
-    CGImageRelease(masked);
-    return maskedImage;
-}
 
 - (IBAction)captureStillImage:(id)sender
 {
@@ -450,27 +338,23 @@ BOOL gLogging = FALSE;
 }
 - (void)StillViewAdd
 {
+    NSLog(@"--s %d",[captureManager retainCount]);
+    [scanModal dismissModalViewControllerAnimated: NO];
+    
+    photoEditController *controller=[[photoEditController alloc] init];
+    [self.navigationController pushViewController:controller animated:YES];
+   
+    [controller setImageData:[[self captureManager] stillImage]];
+    [controller release];
+    
+    [scanModal release];
+    scanModal=nil;
+    [captureManager release];
+    captureManager=nil;
+    
 
-    imageview=[[UIImageView alloc] init];
-    imageview.contentMode = UIViewContentModeScaleAspectFill;
-    [imageview setFrame:CGRectMake(10.0, 10.0, 300.0, 300.0)];
-    [imageview setBackgroundColor:[UIColor blueColor]];
-
-    //imageview.image=[self generatePhotoThumbnail:[[self captureManager] stillImage] withRatio:300.0];
-    imageview.image=[[self captureManager] stillImage];
-    UIButton *saveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [saveButton setImage:[UIImage imageNamed:@"scanbutton.png"] forState:UIControlStateNormal];
-    [saveButton setFrame:CGRectMake(130, 440, 60, 30)];
-    [saveButton addTarget:self action:@selector(uploadImage) forControlEvents:UIControlEventTouchUpInside];
-    
-    scanView=[[UIViewController alloc] init];
-    scanView.view.backgroundColor = [UIColor whiteColor];
-    
-    [scanView.view addSubview:imageview];
-    [scanView.view addSubview:saveButton];
-    
-    
-    UIView *parent = scanModal.view;
+    NSLog(@"--e %d",[captureManager retainCount]);
+    /*UIView *parent = scanModal.view;
     [scanView.view removeFromSuperview];
     [parent addSubview:scanView.view];
 
@@ -512,6 +396,7 @@ BOOL gLogging = FALSE;
     upload.hidden = NO;
     //NSLog(@"modal dismiss");
     [[self scanningLabel] setHidden:YES];
+     */
 }
 - (void)saveImageToPhotoAlbum 
 {
@@ -520,7 +405,7 @@ BOOL gLogging = FALSE;
 - (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
 {
     if (error != NULL) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:@"Image couldn't be saved" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:@"이미지 저장 실패" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
         [alert show];
         [alert release];
     }
@@ -529,20 +414,11 @@ BOOL gLogging = FALSE;
         //imageview.image=[[self captureManager] stillImage];
         //[self dismissModalViewControllerAnimated: YES];
         [self StillViewAdd];
-        upload.hidden = NO;
+   
         [[self scanningLabel] setHidden:YES];
     }
 }
 
--(void)uploadImage{
-    NSString *urlString = @"http://footink.com/user/u";
-    [self requestUrl:urlString];
-    self.ProgressBar = [[UIProgressView alloc]
-                                initWithFrame:CGRectMake(10,350,300,90)];
-    [self.ProgressBar setProgressViewStyle:UIProgressViewStyleDefault];
-    [self.scanView.view addSubview:self.ProgressBar];
-    
-}
 
 
 //라이브러리 사진선택
@@ -552,223 +428,11 @@ BOOL gLogging = FALSE;
     CGRect rect;
     rect = CGRectMake(0.0, 0.0, 300.0, 300.0);
     //imageview.image=[self imageByCropping:img toRect:rect];
-    imageview.image=[self generatePhotoThumbnail:img withRatio:300];
-    upload.hidden = NO;   
-}
-
-
-- (BOOL)requestUrl:(NSString *)url {
-    // URL 접속 초기화
-    NSData *imageData = UIImageJPEGRepresentation(self.imageview.image,90);
-    NSString *urlString = url;
-    
-    //NSLog(@"%@",urlString);
-    CLLocationManager * locationManager = [[CLLocationManager alloc] init];
-    
-    [locationManager setDesiredAccuracy:kCLLocationAccuracyBest];
-    [locationManager setDelegate:self];
-    CLLocation* location = [locationManager location];
-    CLLocationCoordinate2D coordinate = [location coordinate];
-    
-    [locationManager release];
-    //coordinate.latitude;         //위도
-    //coordinate.longitude;      //경도
-    
-     NSDate *currentDate=[NSDate date];
-     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    //imageview.image=[self generatePhotoThumbnail:img withRatio:300];
      
-     [dateFormatter setDateFormat:@"yyyyMMddHHmmss"];
-     //timezone설정
-     //NSTimeZone *usTimeZone = [NSTimeZone timeZoneWithName:@"US/Pacific"];
-     //NSTimeZone *usTimeZone = [NSTimeZone timeZoneWithName:@"UTC"];
-     
-     
-     NSTimeZone *usTimeZone = [NSTimeZone timeZoneWithName:@"Asia/Seoul"];
-     [dateFormatter setTimeZone:usTimeZone];
-     
-     
-    NSDateFormatter *gdateFormatter = [[NSDateFormatter alloc] init];
-    [gdateFormatter setDateFormat:@"yyyy-MM-dd"];
-   
-    
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString] 
-                                             cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                         timeoutInterval:30.0];
-
-    [request setHTTPMethod:@"POST"];
-    
-    NSString *boundary = [NSString stringWithString:@"---------------------------14737809831466499882746641449"];
-    NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
-    
-
-    [request addValue:contentType forHTTPHeaderField:@"Content-Type"];
-    
-    NSMutableData *body = [NSMutableData data];
-	[body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-    
-    //post append
-    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"lat\"\r\n\r\n%f",coordinate.latitude] dataUsingEncoding:NSUTF8StringEncoding] ];
-    [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding] ];
-    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"lon\"\r\n\r\n%f",coordinate.longitude] dataUsingEncoding:NSUTF8StringEncoding] ];
-    [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding] ];
-    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"gdate\"\r\n\r\n%@",[gdateFormatter stringFromDate:currentDate]] dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding] ];
-    //file attach
-	[body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"userfile\"; filename=\"%@.jpg\"\r\n",[dateFormatter stringFromDate:currentDate]] dataUsingEncoding:NSUTF8StringEncoding]];
- 
-	[body appendData:[[NSString stringWithString:@"Content-Type: application/octet-stream\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-	[body appendData:[NSData dataWithData:imageData]];
-	[body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-	// setting the body of the post to the reqeust
-	[request setHTTPBody:body];
-    
-    [dateFormatter release];
-    [gdateFormatter release];
-    
-    
-    self.urlConnection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:true];   
-    if (self.urlConnection) {
-        self.returnData = [[NSMutableData data] retain]; // 수신할 데이터를 받을 공간을 마련
-        _thread=[[NSThread alloc] initWithTarget:self selector:@selector(startTheBackgroundJob) object:nil];
-        [_thread start];
-       
-    }
-    return YES;
-}
-- (void)startTheBackgroundJob {  
-    
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];  
-
-    while ([[NSThread currentThread] isCancelled] == NO) {
-		//NSString *t = [NSString stringWithFormat:@"%i",[_label.text intValue] + 1];
-		[self performSelectorOnMainThread:@selector(makeMyProgressBarMoving) withObject:NO waitUntilDone:YES];
-		[NSThread sleepForTimeInterval:1.0];
-	}
-    
-    [pool release];  
-    
-}  
-- (void)makeMyProgressBarMoving {  
-    
-    float actual = [self.ProgressBar progress];  
-
-
-    if (actual < 1) {  
-        self.ProgressBar.progress = actual + 0.01; 
-    }  
-    else upload.hidden = NO;  
-    
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
-	//NSLog(@"didReceiveResponse");
-    /*
-    if(connection != urlConnection) return;
-	
-    //토탈 바이트 (총용량) : 서버에서 받은 Response를 분석해서 다운로드을 파일의 총 용량을 구해온다.
-	Total_FileSize = [[NSNumber numberWithLongLong:[response expectedContentLength]] longValue];
-
-    NSLog(@"content-length: %ld bytes", Total_FileSize);
-    //self.progressBar.progress = Total_FileSize;  
-    if(self.returnData) 
-    {
-        NSLog(@"Release");
-        [self.returnData release];
-    }
-    
-   
-    //[self.returnData setLength: 0]; 
-    */
-    self.returnData = [[NSMutableData alloc] init];
-    CurLength = [response expectedContentLength];
-    //NSLog(@"%ld",CurLength);
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-    if (data != nil) {
-        [self.returnData appendData:[[NSData alloc] initWithData:data]];    
-    }
-    self.ProgressLabel.text = [NSString stringWithFormat:@"%d Bytes",[self.returnData length]];
-    if (CurLength <= 0) {
-        return;
-    }
-    self.ProgressBar.progress = [self.returnData length] / CurLength;
-    
-    NSLog(@"didReceiveData");
-    /*
-    if(connection != self.urlConnection) return;
-	
-	//data는 서버의 파일을 조각조각 불러온다. 로컬에서 조각조각 불러온 파일을 붙여서 하나의 파일로 만들어놓는다.
-	[self.returnData appendData:data];
-	
-	//다운받은 파일의 용량을 보여준다. 
-	NSNumber* ResponeLength = [NSNumber numberWithUnsignedInteger:[self.returnData length]];
-	NSLog(@"Uploading... size : %ld", [ResponeLength longValue]);
-    
-    
-	//총용량
-	float FileSize = (float)Total_FileSize;
-	
-	//다운로드된 데이터 용량
-	float Down_Filesize = [ResponeLength floatValue];
-	
-	NSLog(@"Upload : %f", Down_Filesize / FileSize);
-    
-	self.progressBar.progress = Down_Filesize / FileSize;
-	
-	//ProgressLabel.text = [NSString stringWithFormat:@"%ld / %ld", [ResponeLength longValue], Total_FileSize];
-     */
 }
 
 
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection
-{
-    [[GlobalStn sharedSingleton] setPickerChk:1];
-    [scanModal dismissModalViewControllerAnimated: YES];          
-    if(connection != urlConnection) return;
-	
-    [_thread cancel];
-    
-    [connection release];
-	[self.returnData release];
-    self.urlConnection=nil;
-    [captureManager release];
-    captureManager=nil;
-    [imageview release];
-    imageview=nil;
-    [scanModal release];
-    scanModal=nil;
-    [scanningLabel release];
- 
-	//도큐멘트 폴더로 파일저장
-	/*NSFileManager* FM = [NSFileManager defaultManager];
-	
-	//[iPhone] 파일 시스템 (Document Directory 경로찾기)
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString *documentsDirectory = [paths objectAtIndex:0];        
-	NSString *downloadPath = [documentsDirectory stringByAppendingPathComponent:@"FileName"];
-	//downloadPath를 콘솔에서 확인 후 그 위치에서 파일을 확인하세요~~~
-	
-	if([FM createFileAtPath:downloadPath contents:returnData attributes:nil])
-	{
-		NSLog(@"데이터저장성공");
-	}
-	
-	//데이터삭제
-	if(returnData) 
-	{
-		NSLog(@"Release");
-		[returnData release];
-	}*/
-}
-
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-{
-    //에러에 관해서 처리..
-    [connection release];
-    [returnData release];
-}
 
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation

@@ -1,0 +1,265 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5D04BE2C13D369FF00F767AC /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D04BE2B13D369FF00F767AC /* UIKit.framework */; };
+		5D04BE2E13D369FF00F767AC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D04BE2D13D369FF00F767AC /* Foundation.framework */; };
+		5D04BE3013D369FF00F767AC /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D04BE2F13D369FF00F767AC /* CoreGraphics.framework */; };
+		5D04BE3613D36A0000F767AC /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5D04BE3413D36A0000F767AC /* InfoPlist.strings */; };
+		5D04BE3913D36A0000F767AC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D04BE3813D36A0000F767AC /* main.m */; };
+		5D04BE3C13D36A0000F767AC /* testlomoAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D04BE3B13D36A0000F767AC /* testlomoAppDelegate.m */; };
+		5D04BE3F13D36A0000F767AC /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5D04BE3D13D36A0000F767AC /* MainWindow.xib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		5D04BE2713D369FF00F767AC /* testlomo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = testlomo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5D04BE2B13D369FF00F767AC /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		5D04BE2D13D369FF00F767AC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		5D04BE2F13D369FF00F767AC /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		5D04BE3313D369FF00F767AC /* testlomo-Info.plist */ = {isa = PBXFileReference; path = "testlomo-Info.plist"; sourceTree = "<group>"; };
+		5D04BE3513D36A0000F767AC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		5D04BE3713D36A0000F767AC /* testlomo-Prefix.pch */ = {isa = PBXFileReference; path = "testlomo-Prefix.pch"; sourceTree = "<group>"; };
+		5D04BE3813D36A0000F767AC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		5D04BE3A13D36A0000F767AC /* testlomoAppDelegate.h */ = {isa = PBXFileReference; path = testlomoAppDelegate.h; sourceTree = "<group>"; };
+		5D04BE3B13D36A0000F767AC /* testlomoAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = testlomoAppDelegate.m; sourceTree = "<group>"; };
+		5D04BE3E13D36A0000F767AC /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		5D04BE2413D369FF00F767AC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5D04BE2C13D369FF00F767AC /* UIKit.framework in Frameworks */,
+				5D04BE2E13D369FF00F767AC /* Foundation.framework in Frameworks */,
+				5D04BE3013D369FF00F767AC /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		5D04BE1C13D369FF00F767AC = {
+			isa = PBXGroup;
+			children = (
+				5D04BE3113D369FF00F767AC /* testlomo */,
+				5D04BE2A13D369FF00F767AC /* Frameworks */,
+				5D04BE2813D369FF00F767AC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		5D04BE2813D369FF00F767AC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5D04BE2713D369FF00F767AC /* testlomo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5D04BE2A13D369FF00F767AC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5D04BE2B13D369FF00F767AC /* UIKit.framework */,
+				5D04BE2D13D369FF00F767AC /* Foundation.framework */,
+				5D04BE2F13D369FF00F767AC /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5D04BE3113D369FF00F767AC /* testlomo */ = {
+			isa = PBXGroup;
+			children = (
+				5D04BE3A13D36A0000F767AC /* testlomoAppDelegate.h */,
+				5D04BE3B13D36A0000F767AC /* testlomoAppDelegate.m */,
+				5D04BE3D13D36A0000F767AC /* MainWindow.xib */,
+				5D04BE3213D369FF00F767AC /* Supporting Files */,
+			);
+			path = testlomo;
+			sourceTree = "<group>";
+		};
+		5D04BE3213D369FF00F767AC /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				5D04BE3313D369FF00F767AC /* testlomo-Info.plist */,
+				5D04BE3413D36A0000F767AC /* InfoPlist.strings */,
+				5D04BE3713D36A0000F767AC /* testlomo-Prefix.pch */,
+				5D04BE3813D36A0000F767AC /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5D04BE2613D369FF00F767AC /* testlomo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5D04BE4213D36A0000F767AC /* Build configuration list for PBXNativeTarget "testlomo" */;
+			buildPhases = (
+				5D04BE2313D369FF00F767AC /* Sources */,
+				5D04BE2413D369FF00F767AC /* Frameworks */,
+				5D04BE2513D369FF00F767AC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = testlomo;
+			productName = testlomo;
+			productReference = 5D04BE2713D369FF00F767AC /* testlomo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5D04BE1E13D369FF00F767AC /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 5D04BE2113D369FF00F767AC /* Build configuration list for PBXProject "testlomo" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 5D04BE1C13D369FF00F767AC;
+			productRefGroup = 5D04BE2813D369FF00F767AC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5D04BE2613D369FF00F767AC /* testlomo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5D04BE2513D369FF00F767AC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5D04BE3613D36A0000F767AC /* InfoPlist.strings in Resources */,
+				5D04BE3F13D36A0000F767AC /* MainWindow.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5D04BE2313D369FF00F767AC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5D04BE3913D36A0000F767AC /* main.m in Sources */,
+				5D04BE3C13D36A0000F767AC /* testlomoAppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		5D04BE3413D36A0000F767AC /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5D04BE3513D36A0000F767AC /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		5D04BE3D13D36A0000F767AC /* MainWindow.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5D04BE3E13D36A0000F767AC /* en */,
+			);
+			name = MainWindow.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		5D04BE4013D36A0000F767AC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		5D04BE4113D36A0000F767AC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+		5D04BE4313D36A0000F767AC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "testlomo/testlomo-Prefix.pch";
+				INFOPLIST_FILE = "testlomo/testlomo-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		5D04BE4413D36A0000F767AC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "testlomo/testlomo-Prefix.pch";
+				INFOPLIST_FILE = "testlomo/testlomo-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALIDATE_PRODUCT = YES;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5D04BE2113D369FF00F767AC /* Build configuration list for PBXProject "testlomo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5D04BE4013D36A0000F767AC /* Debug */,
+				5D04BE4113D36A0000F767AC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5D04BE4213D36A0000F767AC /* Build configuration list for PBXNativeTarget "testlomo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5D04BE4313D36A0000F767AC /* Debug */,
+				5D04BE4413D36A0000F767AC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 5D04BE1E13D369FF00F767AC /* Project object */;
+}

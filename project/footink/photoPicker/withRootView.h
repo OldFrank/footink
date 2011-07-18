@@ -11,7 +11,7 @@
 //#import <CoreLocation/CoreLocation.h>
 #import <MapKit/MapKit.h>
 
-@class withCircle;
+
 @class EGOImageView;
 @interface withRootView : UIViewController <CLLocationManagerDelegate,UIScrollViewDelegate>{
 	UIView *header;
@@ -21,7 +21,7 @@
     UIButton *backButton;
     UIButton *cameraButton;
     
-	withCircle *circle;
+
 	BOOL isUp;	
     CALayer *pulseLayer_;
     EGOImageView *profileView;
@@ -30,7 +30,7 @@
     CLLocation *newUserLocation;
     CATextLayer *nearCountlabel;
 }
-@property (nonatomic, retain) withCircle *circle;
+
 @property (nonatomic, retain) UIView *header;
 @property (nonatomic, retain) UIView *frontView;
 @property (nonatomic, retain) UIView *hideView;

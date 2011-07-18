@@ -29,7 +29,6 @@ bool vchk=NO;
 @synthesize backButton;
 @synthesize cameraButton;
 
-@synthesize circle;
 @synthesize locationManager;
 @synthesize newUserLocation;
 @synthesize nearCountlabel;
@@ -196,7 +195,7 @@ bool vchk=NO;
 - (void)backAct{
     
     [self removeView];
-    
+    self.tabBarController.tabBar.hidden = NO; 
     self.tabBarController.selectedIndex = 0;
     
 }
@@ -381,7 +380,7 @@ bool vchk=NO;
         timer = nil;
     }
     [nearCountlabel release];
-    //[pulseLayer_ release], pulseLayer_ = nil;
+
     [header release];
 	[frontView release];
     [cameraButton release];

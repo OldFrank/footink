@@ -37,12 +37,15 @@
 @end
 
 @implementation PhotoRoot
+
 const CGFloat kScrollObjHeight2	= 80.0;
 const CGFloat kScrollObjWidth2	= 80.0;
 const NSUInteger kNumImages2		= 5;
 const CGFloat SectionHeaderHeight = 26.0;
+
 @synthesize jsonArray,scrollView1,cellContentView;
 @synthesize photoTable,jsonCalArray,activeDownload,imageConnection,downImage;
+@synthesize indicatior,lView;
 
 - (id) init{
     
@@ -156,10 +159,19 @@ const CGFloat SectionHeaderHeight = 26.0;
 -(void)viewWillLoading{
     
     [self.photoTable setContentOffset:CGPointMake(0, -60) animated:YES];
-    UIView *lView=[[UIView alloc] initWithFrame:CGRectMake(0.0, -60.0, 320.0, 60.0)];
+    lView=[[UIView alloc] initWithFrame:CGRectMake(0.0, -60.0, 320.0, 60.0)];
     lView.backgroundColor=[UIColor blackColor];
     lView.tag=333;
     [self.photoTable addSubview:lView];
+    
+    indicatior = [[UIActivityIndicatorView alloc]initWithFrame:CGRectMake(150.0, 5.0, 30, 30)];
+    [indicatior setBackgroundColor:[UIColor clearColor]];
+    [indicatior setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleGray];
+    [lView addSubview:indicatior];
+    [indicatior startAnimating];
+
+    
+    timer = [[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(OnTimer:) userInfo:nil repeats:NO]retain]; 
 }
 - (int)checkNetwork{
     // 네트워크의 상태를 체크.
@@ -253,7 +265,7 @@ const CGFloat SectionHeaderHeight = 26.0;
         }else{
                 NSLog(@"http 오류.");
         }
-        timer = [[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(jsonBackground) userInfo:nil repeats:NO]retain];
+        //timer = [[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(jsonBackground) userInfo:nil repeats:NO]retain];
     }
 }
 -(void)jsonBackground{
@@ -292,11 +304,8 @@ const CGFloat SectionHeaderHeight = 26.0;
         [self showAlert:@"웹서비스 다운."];
     }
 }
-- (void)selTimer:(NSString *)type{
-    
-    timer = [[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(OnTimer:) userInfo:type repeats:NO]retain];
-}
-- (void)OnTimer:(NSTimer *)stimer
+
+- (void)OnTimer:(NSString *)type
 {
     if(timer != nil){
         [timer invalidate];
@@ -340,12 +349,12 @@ const CGFloat SectionHeaderHeight = 26.0;
     switch ([sender tag]) {
         case 0: 
             sort_no=0;
-            [self selTimer:@"today"];
+            [self OnTimer:@"today"];
             
             break;
         case 1: 
             sort_no=1;
-            [self selTimer:@"daily"];
+            [self OnTimer:@"daily"];
             
             break;
             
@@ -355,27 +364,7 @@ const CGFloat SectionHeaderHeight = 26.0;
     }
 }
 
-- (void)touchDownAtTabIndex:(NSUInteger)tabIndex
-{
-    NSLog(@"%d",tabIndex);
-    
-    switch (tabIndex) {
-        case 0: 
-            sort_no=0;
-            [self selTimer:@"today"];
-            
-            break;
-        case 1: 
-            sort_no=1;
-            [self selTimer:@"daily"];
-            
-            break;
-       
-        default:
-            //[self.tableView reloadData];
-            break;
-    }
-}
+
 + (void)cacheCleanTest {
   
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -675,7 +664,13 @@ const CGFloat SectionHeaderHeight = 26.0;
              [spotbutton addTarget:self action:@selector(BtnHttpSend:) forControlEvents:UIControlEventTouchUpInside];
              //[spotbutton setAlpha:0.4];
              [cell.rightView addSubview:spotbutton];
-
+            
+            if((int)[[GlobalStn sharedSingleton] pickerChk]==1){
+                [indicatior stopAnimating];
+                [self.photoTable setContentOffset:CGPointMake(0, 0) animated:YES];
+                [lView removeFromSuperview];
+                [[GlobalStn sharedSingleton] setPickerChk:0];
+            }
              return cell;
         }
     }
@@ -982,6 +977,9 @@ const CGFloat SectionHeaderHeight = 26.0;
     [profileView release];
     [imageConnection cancel];
     [imageConnection release];
+    [indicatior release];
+    indicatior=nil;
+    [lView release];
 	[super dealloc];
 }
 @end

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5D04BDF713D359CD00F767AC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D04BDF613D359CD00F767AC /* AudioToolbox.framework */; };
+		5D04BE1313D364E600F767AC /* Filters.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D04BE1213D364E600F767AC /* Filters.m */; };
+		5D04BE7113D3C35200F767AC /* photoEditController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D04BE7013D3C35200F767AC /* photoEditController.m */; };
 		5DAE227813D20FBB0036BED5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DAE227713D20FBB0036BED5 /* UIKit.framework */; };
 		5DAE227A13D20FBB0036BED5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DAE227913D20FBB0036BED5 /* Foundation.framework */; };
 		5DAE227C13D20FBB0036BED5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DAE227B13D20FBB0036BED5 /* CoreGraphics.framework */; };
@@ -110,11 +113,9 @@
 		5DAE238C13D2123D0036BED5 /* alertBack@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5DAE236B13D2123D0036BED5 /* alertBack@2x.png */; };
 		5DAE238D13D2123D0036BED5 /* AVCamRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE236D13D2123D0036BED5 /* AVCamRecorder.m */; };
 		5DAE238E13D2123D0036BED5 /* AVCamUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE236F13D2123D0036BED5 /* AVCamUtilities.m */; };
-		5DAE238F13D2123D0036BED5 /* AvCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE237113D2123D0036BED5 /* AvCapture.m */; };
 		5DAE239013D2123D0036BED5 /* AvCaptureManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE237313D2123D0036BED5 /* AvCaptureManager.m */; };
 		5DAE239113D2123D0036BED5 /* Branche.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE237513D2123D0036BED5 /* Branche.m */; };
 		5DAE239213D2123D0036BED5 /* BrancheAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE237713D2123D0036BED5 /* BrancheAnnotation.m */; };
-		5DAE239313D2123D0036BED5 /* CircleMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE237913D2123D0036BED5 /* CircleMenu.m */; };
 		5DAE239413D2123D0036BED5 /* CustomTabbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE237B13D2123D0036BED5 /* CustomTabbar.m */; };
 		5DAE239513D2123D0036BED5 /* data.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5DAE237C13D2123D0036BED5 /* data.plist */; };
 		5DAE239613D2123D0036BED5 /* DetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE237E13D2123D0036BED5 /* DetailsViewController.m */; };
@@ -184,6 +185,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5D04BDF613D359CD00F767AC /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		5D04BE1113D364E600F767AC /* Filters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Filters.h; sourceTree = "<group>"; };
+		5D04BE1213D364E600F767AC /* Filters.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Filters.m; sourceTree = "<group>"; };
+		5D04BE6F13D3C35100F767AC /* photoEditController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = photoEditController.h; sourceTree = "<group>"; };
+		5D04BE7013D3C35200F767AC /* photoEditController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = photoEditController.m; sourceTree = "<group>"; };
 		5DAE227313D20FBB0036BED5 /* footink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = footink.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5DAE227713D20FBB0036BED5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		5DAE227913D20FBB0036BED5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -320,16 +326,12 @@
 		5DAE236D13D2123D0036BED5 /* AVCamRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AVCamRecorder.m; path = photoPicker/AVCamRecorder.m; sourceTree = "<group>"; };
 		5DAE236E13D2123D0036BED5 /* AVCamUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AVCamUtilities.h; path = photoPicker/AVCamUtilities.h; sourceTree = "<group>"; };
 		5DAE236F13D2123D0036BED5 /* AVCamUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AVCamUtilities.m; path = photoPicker/AVCamUtilities.m; sourceTree = "<group>"; };
-		5DAE237013D2123D0036BED5 /* AvCapture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AvCapture.h; path = photoPicker/AvCapture.h; sourceTree = "<group>"; };
-		5DAE237113D2123D0036BED5 /* AvCapture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AvCapture.m; path = photoPicker/AvCapture.m; sourceTree = "<group>"; };
 		5DAE237213D2123D0036BED5 /* AvCaptureManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AvCaptureManager.h; path = photoPicker/AvCaptureManager.h; sourceTree = "<group>"; };
 		5DAE237313D2123D0036BED5 /* AvCaptureManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AvCaptureManager.m; path = photoPicker/AvCaptureManager.m; sourceTree = "<group>"; };
 		5DAE237413D2123D0036BED5 /* Branche.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Branche.h; path = photoPicker/Branche.h; sourceTree = "<group>"; };
 		5DAE237513D2123D0036BED5 /* Branche.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Branche.m; path = photoPicker/Branche.m; sourceTree = "<group>"; };
 		5DAE237613D2123D0036BED5 /* BrancheAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BrancheAnnotation.h; path = photoPicker/BrancheAnnotation.h; sourceTree = "<group>"; };
 		5DAE237713D2123D0036BED5 /* BrancheAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BrancheAnnotation.m; path = photoPicker/BrancheAnnotation.m; sourceTree = "<group>"; };
-		5DAE237813D2123D0036BED5 /* CircleMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CircleMenu.h; path = photoPicker/CircleMenu.h; sourceTree = "<group>"; };
-		5DAE237913D2123D0036BED5 /* CircleMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CircleMenu.m; path = photoPicker/CircleMenu.m; sourceTree = "<group>"; };
 		5DAE237A13D2123D0036BED5 /* CustomTabbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CustomTabbar.h; path = photoPicker/CustomTabbar.h; sourceTree = "<group>"; };
 		5DAE237B13D2123D0036BED5 /* CustomTabbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CustomTabbar.m; path = photoPicker/CustomTabbar.m; sourceTree = "<group>"; };
 		5DAE237C13D2123D0036BED5 /* data.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; name = data.plist; path = photoPicker/data.plist; sourceTree = "<group>"; };
@@ -447,6 +449,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D04BDF713D359CD00F767AC /* AudioToolbox.framework in Frameworks */,
 				5DAE244A13D2200E0036BED5 /* AssetsLibrary.framework in Frameworks */,
 				5DAE244813D21E460036BED5 /* CoreMedia.framework in Frameworks */,
 				5DAE244613D21A620036BED5 /* OpenGLES.framework in Frameworks */,
@@ -490,8 +493,6 @@
 		5D04BDF213D2430700F767AC /* friends */ = {
 			isa = PBXGroup;
 			children = (
-				5DAE237813D2123D0036BED5 /* CircleMenu.h */,
-				5DAE237913D2123D0036BED5 /* CircleMenu.m */,
 				5DAE23E513D212600036BED5 /* withAddView.h */,
 				5DAE23E613D212600036BED5 /* withAddView.m */,
 				5DAE23E713D212600036BED5 /* withCircle.h */,
@@ -562,6 +563,15 @@
 			name = utilClass;
 			sourceTree = "<group>";
 		};
+		5D04BE1013D364B100F767AC /* filter */ = {
+			isa = PBXGroup;
+			children = (
+				5D04BE1113D364E600F767AC /* Filters.h */,
+				5D04BE1213D364E600F767AC /* Filters.m */,
+			);
+			name = filter;
+			sourceTree = "<group>";
+		};
 		5DAE226813D20FBA0036BED5 = {
 			isa = PBXGroup;
 			children = (
@@ -582,6 +592,7 @@
 		5DAE227613D20FBB0036BED5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5D04BDF613D359CD00F767AC /* AudioToolbox.framework */,
 				5DAE244913D2200E0036BED5 /* AssetsLibrary.framework */,
 				5DAE244713D21E460036BED5 /* CoreMedia.framework */,
 				5DAE243E13D215DB0036BED5 /* libsqlite3.0.dylib */,
@@ -628,6 +639,7 @@
 				5DAE241C13D212A50036BED5 /* camera */,
 				5D04BDF213D2430700F767AC /* friends */,
 				5DAE237C13D2123D0036BED5 /* data.plist */,
+				5D04BE1013D364B100F767AC /* filter */,
 				5DAE237D13D2123D0036BED5 /* DetailsViewController.h */,
 				5DAE237E13D2123D0036BED5 /* DetailsViewController.m */,
 				5DAE235F13D211970036BED5 /* JSON */,
@@ -866,12 +878,12 @@
 			children = (
 				5DAE23B613D212600036BED5 /* photoPickerViewController.h */,
 				5DAE23B713D212600036BED5 /* photoPickerViewController.m */,
+				5D04BE6F13D3C35100F767AC /* photoEditController.h */,
+				5D04BE7013D3C35200F767AC /* photoEditController.m */,
 				5DAE236C13D2123D0036BED5 /* AVCamRecorder.h */,
 				5DAE236D13D2123D0036BED5 /* AVCamRecorder.m */,
 				5DAE236E13D2123D0036BED5 /* AVCamUtilities.h */,
 				5DAE236F13D2123D0036BED5 /* AVCamUtilities.m */,
-				5DAE237013D2123D0036BED5 /* AvCapture.h */,
-				5DAE237113D2123D0036BED5 /* AvCapture.m */,
 				5DAE237213D2123D0036BED5 /* AvCaptureManager.h */,
 				5DAE237313D2123D0036BED5 /* AvCaptureManager.m */,
 			);
@@ -1042,11 +1054,9 @@
 				5DAE238A13D2123D0036BED5 /* AddViewController.m in Sources */,
 				5DAE238D13D2123D0036BED5 /* AVCamRecorder.m in Sources */,
 				5DAE238E13D2123D0036BED5 /* AVCamUtilities.m in Sources */,
-				5DAE238F13D2123D0036BED5 /* AvCapture.m in Sources */,
 				5DAE239013D2123D0036BED5 /* AvCaptureManager.m in Sources */,
 				5DAE239113D2123D0036BED5 /* Branche.m in Sources */,
 				5DAE239213D2123D0036BED5 /* BrancheAnnotation.m in Sources */,
-				5DAE239313D2123D0036BED5 /* CircleMenu.m in Sources */,
 				5DAE239413D2123D0036BED5 /* CustomTabbar.m in Sources */,
 				5DAE239613D2123D0036BED5 /* DetailsViewController.m in Sources */,
 				5DAE239713D2123D0036BED5 /* FacebookAPIViewController.m in Sources */,
@@ -1090,6 +1100,8 @@
 				5DAE241813D212600036BED5 /* withRootCell.m in Sources */,
 				5DAE241913D212600036BED5 /* withRootView.m in Sources */,
 				5DAE241A13D212600036BED5 /* withViewcontroller.m in Sources */,
+				5D04BE1313D364E600F767AC /* Filters.m in Sources */,
+				5D04BE7113D3C35200F767AC /* photoEditController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

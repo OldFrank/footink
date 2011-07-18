@@ -40,6 +40,9 @@
     NSMutableData *activeDownload;
     NSURLConnection *imageConnection;
     UIImage *downImage;
+    
+    UIActivityIndicatorView *indicatior;
+    UIView *lView;
 }
 @property (nonatomic,retain) NSMutableArray *jsonArray;
 @property (nonatomic,retain) NSMutableArray *jsonCalArray;
@@ -52,7 +55,8 @@
 @property (nonatomic, retain) NSMutableData *activeDownload;
 @property (nonatomic, retain) NSURLConnection *imageConnection;
 @property (nonatomic, retain) UIImage *downImage;
-
+@property (nonatomic, retain) UIActivityIndicatorView *indicatior;
+@property (nonatomic, retain) UIView *lView;
 
 -(void)layoutScrollImages;
 -(void)setData:(NSDictionary *)dict sect:(int)row;
