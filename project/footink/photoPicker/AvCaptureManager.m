@@ -160,6 +160,7 @@
     NSDictionary *outputSettings = [[NSDictionary alloc] initWithObjectsAndKeys:
                                     AVVideoCodecJPEG, AVVideoCodecKey,
                                     nil];
+    
     [newStillImageOutput setOutputSettings:outputSettings];
     [outputSettings release];
     
@@ -184,10 +185,10 @@
     [self setAudioInput:newAudioInput];
     [self setAvsession:newCaptureSession];
     
-    [newStillImageOutput release];
-    [newVideoInput release];
-    [newAudioInput release];
-    [newCaptureSession release];
+    [newStillImageOutput release],newStillImageOutput=nil;
+    [newVideoInput release],newVideoInput=nil;
+    [newAudioInput release],newAudioInput=nil;
+    [newCaptureSession release],newCaptureSession=nil;
     
 	// Set up the movie file output
     NSURL *outputFileURL = [self tempFileURL];
@@ -210,6 +211,7 @@
 	
 	[self setRecorder:newRecorder];
     [newRecorder release];
+    newRecorder=nil;
 	
     success = YES;
 
@@ -517,9 +519,9 @@ bail:
 	[avsession release], avsession = nil;
     [stillImageOutput release], stillImageOutput = nil;
     [stillImage release], stillImage = nil;
-    [recorder release];
-    [videoInput release];
-    [audioInput release];
+    [recorder release], recorder=nil;
+    [videoInput release], videoInput=nil;
+    [audioInput release], audioInput=nil;
 	[super dealloc];
 }
 

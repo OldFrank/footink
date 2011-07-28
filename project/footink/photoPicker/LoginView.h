@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "footinkAppDelegate.h"
+#import "HttpWrapper.h"
 
-@interface LoginView : UIViewController <UINavigationControllerDelegate,UIScrollViewDelegate,UITextFieldDelegate,UIImagePickerControllerDelegate,UIActionSheetDelegate>{
+@interface LoginView : UIViewController <HttpWrapperDelegate,UINavigationControllerDelegate,UIScrollViewDelegate,UITextFieldDelegate,UIImagePickerControllerDelegate,UIActionSheetDelegate>{
 
     UITextField *NameInput;
     UITextField *EmailInput;
@@ -21,18 +22,17 @@
     NSDictionary *jsonArray;
     UITextField *activeField;
     
-    
-    NSURLConnection *connection;
-    NSData *imageData;
-    NSHTTPURLResponse *response;
-    NSMutableData *responseData;
-    
-    int retryCounter;
 
-    IBOutlet UIProgressView *uploadProgress;
-    IBOutlet UILabel *uploadProgressMessage;
+    NSData *imageData;
+
     
+
+    UIView *viewCont;
     UIImagePickerController *cameraController;
+    HttpWrapper *progressbar;
+    UIView *progressBack;
+    
+    BOOL imageAttachChk;
 }
 @property (nonatomic,retain) UITextField *NameInput;
 @property (nonatomic,retain) UITextField *EmailInput;
@@ -42,12 +42,13 @@
 @property (nonatomic,retain) UIScrollView *scrollView;
 @property (nonatomic,retain) NSDictionary *jsonArray;
 @property (nonatomic,retain) UITextField *activeField;
-@property (nonatomic,retain) NSURLConnection *connection;
-@property (nonatomic,retain) NSData *imageData;
-@property (nonatomic,retain) NSHTTPURLResponse *response;
-@property (nonatomic,retain) NSMutableData *responseData;
-@property (nonatomic, retain) UIImagePickerController *cameraController;
 
+@property (nonatomic,retain) NSData *imageData;
+
+
+@property (nonatomic, retain) UIImagePickerController *cameraController;
+@property (nonatomic, retain) UIView *progressBack;
+@property (nonatomic, retain) UIView *viewCont;
 
 -(void)AddAuthRecord;
 -(BOOL)HttpAuth:(NSMutableArray *)regValue;
@@ -55,5 +56,5 @@
 -(void) registerForKeyboardNotifications;
 -(void)CameraOpen;
 -(void)LibraryPhoto;
--(void)sendLogin;
+-(BOOL)sendLogin;
 @end

@@ -8,34 +8,37 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
+#import <QuartzCore/QuartzCore.h>
+#import <QuartzCore/CoreAnimation.h>
+#import "Filters.h"
 
-@interface photoEditController : UIViewController <UINavigationControllerDelegate,UIScrollViewDelegate,CLLocationManagerDelegate>{
-     UIImageView *imageview;
-    UIImageView *filterImageView;
-    
-    
-    NSURLConnection *connection;
-    NSHTTPURLResponse *response;
-    NSMutableData *responseData;
-    
-    int retryCounter;
-    
-    IBOutlet UIProgressView *uploadProgress;
-    IBOutlet UILabel *uploadProgressMessage;
 
+@interface photoEditController : UIViewController <FiltersDelegate,UINavigationControllerDelegate,UIScrollViewDelegate,CLLocationManagerDelegate>{
+    
+    UIImageView *originalImageview;
+    UIImageView *blendedImageview;
+    UIScrollView *filterScrollView;
+
+    NSArray *arrImage;
+    NSTimer *timer; 
+    int selectedTag;
 }
-@property (nonatomic, retain) UIImageView *filterImageView;
-@property (nonatomic, retain) UIImageView *imageview;
-
-@property (nonatomic,retain) NSURLConnection *connection;
-@property (nonatomic,retain) NSHTTPURLResponse *response;
-@property (nonatomic,retain) NSMutableData *responseData;
+@property (nonatomic, retain) UIImageView *blendedImageview;
+@property (nonatomic, retain) UIImageView *originalImageview;
+@property (nonatomic, retain) UIScrollView *filterScrollView;
+@property (nonatomic, retain) NSArray *arrImage;
+@property (nonatomic, assign) int selectedTag;
 
 -(UIImage *)generatePhotoThumbnail:(UIImage *)image withRatio:(float)ratio;
 -(UIImage *)resizeImage:(UIImage *)image width:(float)resizeWidth height:(float)resizeHeight;
 -(UIImage *)maskingImage:(UIImage *)image maskImage:(NSString *)_maskImage;
--(void) uploadImage;
--(BOOL)requestUrl:(NSString *)url;
--(void)setImageData:(UIImage *)img;
+- (UIImage*)loadImage:(NSString*)imageName;
+- (void)removeImage:(NSString*)fileName;
 
+-(void)setImageData;
+-(void)filmFxEffect:(id)sender;
+- (void)layoutScrollImages;
+-(void)selectedFilter:(int)fint;
+-(void)popfilmFxEffect:(int)selTag;
+-(void)initLayout;
 @end

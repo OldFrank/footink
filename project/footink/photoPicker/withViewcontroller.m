@@ -22,7 +22,7 @@ const CGFloat bigImgkScrollObjWidth	= 300.0;
 const NSUInteger kFNumImages		= 1;
 
 @synthesize jsonArray;
-@synthesize scrollView,fscrollView,pageControl,viewControllers;
+@synthesize scrollView,fscrollView,pageControl,viewControllers,bodyScrollView;
 
 - (id) init{
     self=[super init];
@@ -35,22 +35,8 @@ const NSUInteger kFNumImages		= 1;
 - (void)viewDidLoad {
 	[super viewDidLoad];
     
-	[self.navigationController setNavigationBarHidden:YES animated:NO];
-    
-    NSLog(@"%@",[[GlobalStn sharedSingleton] pushToken]);
-
-    header=[[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 40.0)];
-    header.backgroundColor=[UIColor whiteColor];
-    [self.view addSubview:header];
-    [header release];
-    
-    profileView = [[EGOImageView alloc] initWithPlaceholderImage:[UIImage imageNamed:@"nonpic_80.png"]];
-    profileView.frame = CGRectMake(2.0, 2.0, 40.0, 40.0);
-    [profileView setUserInteractionEnabled:YES];
-    [header addSubview:profileView];
-    
-    bodyScrollView=[[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 50.0, 320.0, 400.0)];
-    [bodyScrollView setBackgroundColor:[UIColor orangeColor]];
+    bodyScrollView=[[UIScrollView alloc] initWithFrame:CGRectMake(0.0,20.0,[UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width)];
+    [bodyScrollView setBackgroundColor:[UIColor whiteColor]];
     [bodyScrollView setCanCancelContentTouches:NO];
     
     bodyScrollView.showsVerticalScrollIndicator=NO;
@@ -61,8 +47,7 @@ const NSUInteger kFNumImages		= 1;
 
     [self.view addSubview:bodyScrollView];
     
-    
-    scrollView=[[UIScrollView alloc] initWithFrame:CGRectMake(10.0, 0.0, 300.0, 300.0)];
+    scrollView=[[UIScrollView alloc] initWithFrame:CGRectMake(10.0, 0.0, [UIScreen mainScreen].bounds.size.width - 20.0, [UIScreen mainScreen].bounds.size.width - 20.0)];
     [scrollView setBackgroundColor:[UIColor lightGrayColor]];
     [scrollView setCanCancelContentTouches:NO];
     
@@ -75,13 +60,16 @@ const NSUInteger kFNumImages		= 1;
     
     [bodyScrollView addSubview:scrollView];
     
-    [bodyScrollView setContentOffset:CGPointMake(0, -60) animated:YES];
+    [bodyScrollView setContentOffset:CGPointMake(0, 30) animated:YES];
     
-    fscrollView=[[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 360.0, 320.0, 60.0)];
+    fscrollView=[[UIScrollView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width, 100.0)];
     fscrollView.backgroundColor=[UIColor grayColor];
     [self.view addSubview:fscrollView];
     
     [self jsonDummy];
+}
+-(void)viewWillAppear:(BOOL)animated{
+    self.tabBarController.tabBar.hidden = YES; 
 }
 -(void)jsonDummy
 {
@@ -184,8 +172,7 @@ const NSUInteger kFNumImages		= 1;
     [scrollView addSubview:pageControl];
     
 
-    [self loadScrollViewWithPage:0];
-    [self loadScrollViewWithPage:1];
+
 
 }
 
@@ -354,7 +341,6 @@ const NSUInteger kFNumImages		= 1;
     // For example: self.myOutlet = nil;
 }
 - (void)dealloc {
-    [header release];
     [profileView release];
     [jsonArray release];
     [bigImageView release];

@@ -24,6 +24,7 @@
 
     
     NSMutableArray *jsonArray;
+    NSArray *lovedArray;
     NSMutableArray *jsonCalArray;
     EGORefreshTableHeaderView *_refreshHeaderView;
     BOOL _reloading;
@@ -57,6 +58,7 @@
 @property (nonatomic, retain) UIImage *downImage;
 @property (nonatomic, retain) UIActivityIndicatorView *indicatior;
 @property (nonatomic, retain) UIView *lView;
+@property (nonatomic, retain) NSArray *lovedArray;
 
 -(void)layoutScrollImages;
 -(void)setData:(NSDictionary *)dict sect:(int)row;
@@ -72,5 +74,8 @@
 
 + (void)cacheCleanTest;
 -(void)viewWillLoading;
+-(void)commentSubmit:(id)sender;
+-(BOOL)lovedSubmit:(id)sender;
+-(BOOL)chkLoved:(int)cnt;
 @end
 

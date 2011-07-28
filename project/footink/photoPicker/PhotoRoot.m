@@ -27,6 +27,10 @@
 #import <mach/mach_host.h>
 #import "ProfileViewController.h"
 
+#import "CommentView.h"
+
+#define PHOTO_LOVED_POST_URL @"http://footink.com/user/loved"
+
 @implementation UINavigationBar (pCustomImage)
 
 - (void)drawRect:(CGRect)rect {
@@ -45,7 +49,7 @@ const CGFloat SectionHeaderHeight = 26.0;
 
 @synthesize jsonArray,scrollView1,cellContentView;
 @synthesize photoTable,jsonCalArray,activeDownload,imageConnection,downImage;
-@synthesize indicatior,lView;
+@synthesize indicatior,lView,lovedArray;
 
 - (id) init{
     
@@ -81,6 +85,11 @@ const CGFloat SectionHeaderHeight = 26.0;
 -(void)viewDidLoad{
 
         [super viewDidLoad];
+       
+    //if([[UIScreen mainScreen] respondsToSelector:@selector(applicationFrame)]){
+        
+    //}
+    
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque];
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
         
@@ -151,6 +160,8 @@ const CGFloat SectionHeaderHeight = 26.0;
 
 -(void)viewWillAppear:(BOOL)animated{
     NSLog(@"%d",[[GlobalStn sharedSingleton] pickerChk]);
+    
+    
     [self print_free_memory];
     if((int)[[GlobalStn sharedSingleton] pickerChk]==1){
         [self viewWillLoading];
@@ -171,7 +182,9 @@ const CGFloat SectionHeaderHeight = 26.0;
     [indicatior startAnimating];
 
     
-    timer = [[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(OnTimer:) userInfo:nil repeats:NO]retain]; 
+    [self performSelector:@selector(OnTimer:) withObject:nil afterDelay :2.0f];
+    
+  
 }
 - (int)checkNetwork{
     // 네트워크의 상태를 체크.
@@ -268,43 +281,6 @@ const CGFloat SectionHeaderHeight = 26.0;
         //timer = [[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(jsonBackground) userInfo:nil repeats:NO]retain];
     }
 }
--(void)jsonBackground{
-    NSURLRequest *request = [[[NSURLRequest alloc] init] autorelease];
-    NSString *url;
-
-    url=@"http://footink.com/user/g";
-   
-    [request initWithURL:[NSURL URLWithString:url]];
-    
-    //NSData *response = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
-    NSURLResponse *response;
-    NSHTTPURLResponse *httpResponse;
-    NSError *error;
-    
-    id stringReply;
-    
-    NSData *datareply=[NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];   
-    
-    
-    stringReply = (NSString *)[[NSString alloc] initWithData:datareply encoding:NSUTF8StringEncoding];
-    
-    httpResponse = (NSHTTPURLResponse *)response;
-    int statusCode = [httpResponse statusCode]; 
-    
-    if(statusCode==200) {
-        
-        self.jsonCalArray=[stringReply JSONValue];
-        if(self.jsonCalArray==nil)
-            NSLog(@"parsing error");
-        
-        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-    }else{
-        NSLog(@"http 오류.");
-        [self hideAlert];
-        [self showAlert:@"웹서비스 다운."];
-    }
-}
-
 - (void)OnTimer:(NSString *)type
 {
     if(timer != nil){
@@ -338,33 +314,25 @@ const CGFloat SectionHeaderHeight = 26.0;
 {
     UILabel* label = [[[UILabel alloc] init] autorelease];
     label.text = ltext;
-    
     return label;
 }
-
 - (void)sortingList:(id)sender
 {
     NSLog(@"%d",[sender tag]);
-    
     switch ([sender tag]) {
         case 0: 
             sort_no=0;
             [self OnTimer:@"today"];
-            
             break;
         case 1: 
             sort_no=1;
             [self OnTimer:@"daily"];
-            
             break;
-            
         default:
             //[self.tableView reloadData];
             break;
     }
 }
-
-
 + (void)cacheCleanTest {
   
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -384,25 +352,16 @@ const CGFloat SectionHeaderHeight = 26.0;
     }
 }
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    
 	return 1;
 }
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-	if(sort_no==0){
-        return [self.jsonArray count];
-    }else{
-         return [self.jsonCalArray count];
-    }
+	
+    return [self.jsonArray count];
 }
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    
     NSString *title = nil;
-    if(sort_no==0){
-        title = [[self.jsonArray objectAtIndex:section] valueForKey:@"date"];
-    }else{
-        title = [[[self.jsonCalArray objectAtIndex:section] valueForKey:@"date"]objectAtIndex:0];
-    }
+    title = [[self.jsonArray objectAtIndex:section] valueForKey:@"date"];
 	return title;
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -454,15 +413,12 @@ const CGFloat SectionHeaderHeight = 26.0;
         }
         return 80;
     }else{
- 
         if (onOffCell) {
             if(nindex == indexPath.section){
-
                 return 250;
             }
-            
         }
-        return 250;
+        return 300;
     }
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -471,219 +427,162 @@ const CGFloat SectionHeaderHeight = 26.0;
     tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     tableView.separatorColor = [UIColor whiteColor];
     
-   
-    if(sort_no==1){
-        [PhotoRoot cacheCleanTest];
-        
-        [[GlobalStn sharedSingleton] setCelltot:0];
-        [[GlobalStn sharedSingleton] setCelltot:[[self.jsonCalArray objectAtIndex:indexPath.section]count]];
-        
-        static NSString *CellID = @"CalendarIdentifier";
-        
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellID];
-        if(cell == nil) {
-            cell =  [[[UITableViewCell alloc] 
-                      initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellID] autorelease];
-            cell.accessoryType = UITableViewCellAccessoryNone;
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        }
-        
-        NSDictionary *itemAtIndex = (NSDictionary *)[self.jsonCalArray objectAtIndex:indexPath.section];
-        NSArray *uniq=[itemAtIndex valueForKey:@"idx"];
-       
-        scrollView1 = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, 320, 80)];
-        [scrollView1 setBackgroundColor:[UIColor whiteColor]];
-        [scrollView1 setCanCancelContentTouches:NO];
-        scrollView1.indicatorStyle = UIScrollViewIndicatorStyleWhite;
-        scrollView1.clipsToBounds = YES;
-        scrollView1.scrollEnabled = YES;
-        [scrollView1 setShowsVerticalScrollIndicator:NO];      //스크롤 막대 숨기기 여부 
-        [scrollView1 setShowsHorizontalScrollIndicator:NO];
-        scrollView1.pagingEnabled = NO;
-        
-        if((int)[[GlobalStn sharedSingleton] celltot]==0){
-            
-        }else{
-            NSUInteger i;
-            NSUInteger imgct;
-            if((int)[[GlobalStn sharedSingleton] celltot] < kNumImages2){
-                imgct = kNumImages2;
-            }else{
-                imgct = (int)[[GlobalStn sharedSingleton] celltot];
-            }
-
-            for (i = 1; i <= (int)[[GlobalStn sharedSingleton] celltot]; i++)
-            {
-                int a=i - 1;
-                NSString *tempidx=[NSString stringWithFormat:@"%@",[uniq objectAtIndex:a]];
-                int idx=[tempidx intValue];
-                
-                calImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"blank_80.png"]];
-              
-                CGRect rect = calImageView.frame;
-                rect.size.height = kScrollObjHeight2;
-                rect.size.width = kScrollObjWidth2;
-                calImageView.frame = rect;
-                [calImageView setUserInteractionEnabled:YES];
-                calImageView.tag = idx;
-                
-                 UIButton *button = [[UIButton alloc]init];
-               
-                button.frame = rect;
-                button.tag = idx;
-                [button setImage:[UIImage imageNamed:@"blank_80.png"] forState:UIControlStateNormal];
-                [button addTarget:self action:@selector(detailPush:) forControlEvents:UIControlEventTouchUpInside];
-                
-                [calImageView addSubview:button];
-                
-                [button release];
-                
-                [scrollView1 addSubview:calImageView];
-            }
-            //빈이미지 넣기
-            if((int)[[GlobalStn sharedSingleton] celltot] < kNumImages2){
-                NSUInteger x;
-                NSUInteger imgemt;
-                imgemt=kNumImages2 - (int)[[GlobalStn sharedSingleton] celltot];
-                
-                for (x = imgemt; x <= kNumImages2; x++)
-                {
-                    calImageView.image = [UIImage imageNamed:@"blank_80.png"];
-                    
-                    CGRect rect = calImageView.frame;
-                    rect.size.height = kScrollObjHeight2;
-                    rect.size.width = kScrollObjWidth2;
-                    calImageView.frame = rect;
-                    
-                    [scrollView1 addSubview:calImageView];
-                }
-            }
-            [self setData:itemAtIndex sect:indexPath.section];
-            
-        }
-        cellContentView = cell.contentView;
-        [self layoutScrollImages];
-        [cellContentView addSubview:scrollView1]; 
-        return cell;
-    }else{
+    //NSLog(@"====%d",(int)[[self.jsonArray objectAtIndex:indexPath.section] count]);
     
-        if(onOffCell && nindex == indexPath.section){
-            /*static NSString *CellID = @"dynamicCell";
-            UITableViewCell *cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellID];
-            if(cell == nil) {
-                cell =  [[[UITableViewCell alloc] 
-                          initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellID] autorelease];
-                cell.accessoryType = UITableViewCellAccessoryNone;
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            }
+    static NSString *CellID = @"Identifier";
+    PhotoLargeCell *cell = (PhotoLargeCell *)[tableView dequeueReusableCellWithIdentifier:CellID];
+    if(cell == nil) {
+        cell =  [[[PhotoLargeCell alloc] 
+                  initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellID] autorelease];
+        cell.accessoryType = UITableViewCellAccessoryNone;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
+        //for(int y=0;y < [[self.jsonArray objectAtIndex:indexPath.section] count];y++){
+            NSLog(@"%d",indexPath.section);
+        // }
 
-            //int idx=[[[self.jsonArray objectAtIndex:indexPath.section] objectForKey:@"idx"] intValue];
-            self.imageView=nil;
-            self.imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"blank_80.png"]];
-            CGRect rect = CGRectMake(10.0, 0.0, 250.0, 250.0);
-            
-            self.imageView.frame = rect;
-            [self.imageView setUserInteractionEnabled:YES];
-            self.imageView.tag = indexPath.section;
-            
-            UIButton *imgButton=[[[UIButton alloc] initWithFrame:CGRectMake(0.0, 0.0, 300.0, 250.0)] autorelease];
-
-            imgButton.tag = indexPath.section * 10;
-            [imgButton setImage:[UIImage imageNamed:@"blank_80.png"] forState:UIControlStateNormal];
-            [imgButton addTarget:self action:@selector(selectCellImage:) forControlEvents:UIControlEventTouchUpInside];
-            
-            [self.imageView addSubview:imgButton];
-            
-            [cell addSubview:self.imageView];
-             
-             [(UIImageView*)[self.imageView viewWithTag:indexPath.section] setImageURLString:[[self.jsonArray objectAtIndex:indexPath.section] objectForKey:@"img"]];
-            
-            self.profileView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Icon.png"]];
-            self.profileView.frame = CGRectMake(270.0, 0.0, 40.0, 40.0);
-            [self.profileView setUserInteractionEnabled:YES];
-            [cell addSubview:self.profileView];
-
-           // [self setData:itemAtIndex sect:indexPath.section];
-            
-            //[rightView release];
-            
-            //[self.profileView release];
-            //self.profileView=nil;
-            //[self.photoTable setContentOffset:CGPointMake(0, nindex * 60) animated:YES];
-            //NSLog(@"offset %f",self.photoTable.contentOffset.y);
-           
-            //[self.imageView release];
-            //self.imageView=nil;
-            [self.imageView release];
-            self.imageView=nil;
-            
-            return cell;  
-             */
-        }else{
-            static NSString *CellID = @"Identifier";
-            PhotoLargeCell *cell = (PhotoLargeCell *)[tableView dequeueReusableCellWithIdentifier:CellID];
-            if(cell == nil) {
-                cell =  [[[PhotoLargeCell alloc] 
-                          initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellID] autorelease];
-                cell.accessoryType = UITableViewCellAccessoryNone;
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            }
-            profileView = [[EGOImageView alloc] initWithPlaceholderImage:[UIImage imageNamed:@"nonpic_80.png"]];
-            profileView.frame = CGRectMake(0.0, 0.0, 40.0, 40.0);
-            [profileView setUserInteractionEnabled:YES];
-            
-            profileView.imageURL = [NSURL URLWithString:[[self.jsonArray objectAtIndex:indexPath.section] objectForKey:@"icon"]];
-            
-            [cell.rightView addSubview:profileView];
-            
-            UIButton *button = [[UIButton alloc]init];
-            CGRect rect = profileView.frame;
-            button.frame = rect;
-            button.tag = (int)[[self.jsonArray objectAtIndex:indexPath.section] objectForKey:@"uidx"];
-            [button setImage:[UIImage imageNamed:@"blank_80.png"] forState:UIControlStateNormal];
-            [button addTarget:self action:@selector(ProfileDetail:) forControlEvents:UIControlEventTouchUpInside];
-            
-            [profileView addSubview:button];
-
-            [cell setPhoto:[[self.jsonArray objectAtIndex:indexPath.section] objectForKey:@"img"] profile:[[self.jsonArray objectAtIndex:indexPath.section] objectForKey:@"icon"]];
- 
-             UIButton *lovebutton = [[[UIButton alloc] initWithFrame:CGRectMake(5.0,60.0, 31, 30)] autorelease];
-             [lovebutton setImage:[UIImage imageNamed:@"ico_loved.png"] forState:UIControlStateNormal];
-             [lovebutton addTarget:self action:@selector(BtnHttpSend:) forControlEvents:UIControlEventTouchUpInside];
-             //[lovebutton setAlpha:0.4];
-             [cell.rightView addSubview:lovebutton];
-             
-             UIButton *commentbutton = [[[UIButton alloc] initWithFrame:CGRectMake(5.0,100.0, 29, 45)] autorelease];
-             [commentbutton setImage:[UIImage imageNamed:@"ico_comment.png"] forState:UIControlStateNormal];
-             [commentbutton addTarget:self action:@selector(BtnHttpSend:) forControlEvents:UIControlEventTouchUpInside];
-             //[commentbutton setAlpha:0.4];
-             [cell.rightView addSubview:commentbutton];
-             
-             UIButton *spotbutton = [[[UIButton alloc] initWithFrame:CGRectMake(5.0,160.0, 30, 42)] autorelease];
-             [spotbutton setImage:[UIImage imageNamed:@"ico_spot.png"] forState:UIControlStateNormal];
-             [spotbutton addTarget:self action:@selector(BtnHttpSend:) forControlEvents:UIControlEventTouchUpInside];
-             //[spotbutton setAlpha:0.4];
-             [cell.rightView addSubview:spotbutton];
-            
-            if((int)[[GlobalStn sharedSingleton] pickerChk]==1){
-                [indicatior stopAnimating];
-                [self.photoTable setContentOffset:CGPointMake(0, 0) animated:YES];
-                [lView removeFromSuperview];
-                [[GlobalStn sharedSingleton] setPickerChk:0];
-            }
-             return cell;
-        }
     }
+    profileView = [[EGOImageView alloc] initWithPlaceholderImage:[UIImage imageNamed:@"nonpic_80.png"]];
+    profileView.frame = CGRectMake(0.0, 0.0, 40.0, 40.0);
+    [profileView setUserInteractionEnabled:YES];
+    
+    [cell.rightView addSubview:profileView];
+    cell.imageView.image=nil;
+    [cell setPhoto:[[self.jsonArray objectAtIndex:indexPath.section] objectForKey:@"img"] profile:[[self.jsonArray objectAtIndex:indexPath.section] objectForKey:@"icon"]];
+    
+    profileView.imageURL = [NSURL URLWithString:[[self.jsonArray objectAtIndex:indexPath.section] objectForKey:@"icon"]];
+    
+       
+    UIButton *button = [[[UIButton alloc]init] autorelease];
+    CGRect rect = profileView.frame;
+    button.frame = rect;
+    button.tag = (int)[[self.jsonArray objectAtIndex:indexPath.section] objectForKey:@"uidx"];
+    [button setImage:[UIImage imageNamed:@"blank_80.png"] forState:UIControlStateNormal];
+    [button addTarget:self action:@selector(ProfileDetail:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [profileView addSubview:button];
+    
+    UIButton *lovebutton = [[[UIButton alloc] initWithFrame:CGRectMake(5.0,60.0, 31, 30)] autorelease];
+    lovebutton.tag = (int)[[self.jsonArray objectAtIndex:indexPath.section] objectForKey:@"idx"];
+
+    int cnt=[[[self.jsonArray objectAtIndex:indexPath.section] objectForKey:@"loved"] count];
+    
+    if(cnt>0){
+        for(int x=0;x<cnt;x++){
+            if([[[GlobalStn sharedSingleton] ukey]  isEqualToString:[[[self.jsonArray objectAtIndex:indexPath.section] objectForKey:@"loved"] objectAtIndex:x]]){
+                [lovebutton setImage:[UIImage imageNamed:@"ico_loved_on.png"] forState:UIControlStateNormal];
+             }
+        }       
+    }else{
+        [lovebutton setImage:[UIImage imageNamed:@"ico_loved.png"] forState:UIControlStateNormal];
+        [lovebutton addTarget:self action:@selector(lovedSubmit:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    [cell.rightView addSubview:lovebutton];
+ 
+    
+    cell.lovedlabel.text=[NSString stringWithFormat:@"Loved %d",cnt];
+    cell.comlabel.text=[NSString stringWithFormat:@"Comment %@",[[self.jsonArray objectAtIndex:indexPath.section] objectForKey:@"comment"]];
+    
+    UIButton *commentbutton = [[[UIButton alloc] initWithFrame:CGRectMake(5.0,100.0, 29, 45)] autorelease];
+    commentbutton.tag = (int)[[self.jsonArray objectAtIndex:indexPath.section] objectForKey:@"idx"];
+    
+    [commentbutton setImage:[UIImage imageNamed:@"ico_comment.png"] forState:UIControlStateNormal];
+    [commentbutton addTarget:self action:@selector(commentSubmit:) forControlEvents:UIControlEventTouchUpInside];
+    [cell.rightView addSubview:commentbutton];
+    
+    UIButton *spotbutton = [[[UIButton alloc] initWithFrame:CGRectMake(5.0,160.0, 30, 42)] autorelease];
+    spotbutton.tag = (int)[[self.jsonArray objectAtIndex:indexPath.section] objectForKey:@"idx"];
+    [spotbutton setImage:[UIImage imageNamed:@"ico_spot.png"] forState:UIControlStateNormal];
+    [spotbutton addTarget:self action:@selector(lovedSubmit:) forControlEvents:UIControlEventTouchUpInside];
+    [cell.rightView addSubview:spotbutton];
+    
+    if((int)[[GlobalStn sharedSingleton] pickerChk]==1){
+        [indicatior stopAnimating];
+        [self.photoTable setContentOffset:CGPointMake(0, 0) animated:YES];
+        [lView removeFromSuperview];
+        [[GlobalStn sharedSingleton] setPickerChk:0];
+    }
+    return cell;
+}
+- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
+    NSLog(@"====%@",indexPath.row);
 }
 -(void)ProfileDetail:(id)sender{
     ProfileViewController *controller=[[ProfileViewController alloc] init];
-    controller.uidx=(NSInteger *)[sender tag];
+    controller.uidx=(NSInteger)[sender tag];
+    controller.hidesBottomBarWhenPushed=YES;
     [self.navigationController pushViewController:controller animated:YES];
+    [controller release];
 }
-- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
-    NSLog(@"%d",indexPath.row);
-    //id rowObject = [myArray objectAtIndex:indexPath.row];
+-(void)commentSubmit:(id)sender{
+    CommentView *controller=[[CommentView alloc] init];
+    controller.pidx=[NSString stringWithFormat:@"%@",[sender tag]];
+    controller.hidesBottomBarWhenPushed=YES;
+    [self.navigationController pushViewController:controller animated:YES];
+    [controller release];
 }
+-(BOOL)lovedSubmit:(id)sender{
+   //[NSString stringWithFormat:@"%@",[sender tag]];
+    NSLog(@"sender %@",[sender tag]);
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:PHOTO_LOVED_POST_URL] 
+                                                           cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                                       timeoutInterval:30.0];
+    [request setHTTPMethod:@"POST"];
+    
+    NSString *boundary = [NSString stringWithString:@"-----------14737809831466499882746641449"];
+    NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
+    [request addValue:contentType forHTTPHeaderField:@"Content-Type"];
+    
+    NSMutableData *body = [NSMutableData data];
+    [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+    //post append
+    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"uname\"\r\n\r\n%@",[[GlobalStn sharedSingleton] uname]] dataUsingEncoding:NSUTF8StringEncoding] ];
+    [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding] ];
+    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"lkey\"\r\n\r\n%@",[[GlobalStn sharedSingleton] ukey]] dataUsingEncoding:NSUTF8StringEncoding] ];
+    [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding] ];
+    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"pidx\"\r\n\r\n%@",[sender tag]] dataUsingEncoding:NSUTF8StringEncoding] ];
+    [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding] ];
+
+    [request setHTTPBody:body];
+    
+    NSURLResponse *iresponse;
+    NSHTTPURLResponse *httpResponse;
+    NSError *error;
+    
+    id stringReply;
+    
+    NSData *datareply=[NSURLConnection sendSynchronousRequest:request returningResponse:&iresponse error:&error];
+    stringReply = (NSString *)[[NSString alloc] initWithData:datareply encoding:NSUTF8StringEncoding];
+    
+    httpResponse = (NSHTTPURLResponse *)iresponse;
+    int statusCode = [httpResponse statusCode];  
+    //NSLog(@"HTTP Response Headers %@", [httpResponse allHeaderFields]); 
+    //NSLog(@"HTTP Status code: %d", statusCode);
+    
+    if(statusCode==200) {
+        NSLog(@"submit %@",stringReply);
+     
+ 
+            UIImage *unselectedImage=[UIImage imageNamed:@"ico_loved.png"];
+            UIImage *selectedImage=[UIImage imageNamed:@"ico_loved_on.png"];
+            
+            if ([sender isSelected]) {
+                [sender setImage:unselectedImage forState:UIControlStateNormal];
+                [sender setSelected:NO];
+            }else {
+                [sender setImage:selectedImage forState:UIControlStateSelected];
+                [sender setSelected:YES];
+            }
+  
+        
+    }else{
+        NSLog(@"http 오류.");
+    }
+
+    
+    return TRUE;
+}
+
 
 - (void)selectCellImage:(id)sender{
     
@@ -712,9 +611,7 @@ const CGFloat SectionHeaderHeight = 26.0;
 
 //이미지 마스킹
 - (UIImage*) maskImage:(UIImage *)image withMask:(UIImage *)maskImage {
-    
 	CGImageRef maskRef = maskImage.CGImage; 
-    
 	CGImageRef mask = CGImageMaskCreate(CGImageGetWidth(maskRef),
                                         CGImageGetHeight(maskRef),
                                         CGImageGetBitsPerComponent(maskRef),
@@ -724,13 +621,8 @@ const CGFloat SectionHeaderHeight = 26.0;
     
 	CGImageRef masked = CGImageCreateWithMask([image CGImage], mask);
 	return [UIImage imageWithCGImage:masked];
-    
 }
-/*- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
 
-}
-*/
 - (void)BtnHttpSend:(id)sender{
     NSLog(@"send %@",sender);
 }
@@ -790,7 +682,8 @@ const CGFloat SectionHeaderHeight = 26.0;
     photoDetailView *controller = [[photoDetailView alloc] init];
     controller.itemID=(NSInteger *)[sender tag];
     controller.view.backgroundColor=[UIColor whiteColor];
-
+    
+    
     [self.navigationController pushViewController:controller animated:YES];
     
     [controller release];

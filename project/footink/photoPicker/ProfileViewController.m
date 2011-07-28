@@ -11,9 +11,12 @@
 #import "JSON.h"
 #import "EGOImageView.h"
 #import "GlobalStn.h"
+#import "ProfileImageCell.h"
+#import "PicViewController.h"
 
 #define FOLLOWCHK_URL @"http://footink.com/user/followchk"
 #define USERPROFILE_URL @"http://footink.com/user/userDetail"
+#define USER_PHOTO_URL @"http://footink.com/user/personal"
 #define FOLLOW_SUBMIT_URL @"http://footink.com/user/followsubmit"
 
 @implementation ProfileViewController
@@ -30,11 +33,13 @@
 @synthesize header;
 @synthesize followBtn;
 @synthesize indicator;
+@synthesize progressBack;
+
+@synthesize scrollView;
+@synthesize viewControllers;
 
 - (void)viewDidLoad
 {
-    
-
     header=[[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 100.0)];
     header.backgroundColor=[UIColor grayColor];
     [self.view addSubview:header];
@@ -43,7 +48,6 @@
     profileView = [[EGOImageView alloc] initWithPlaceholderImage:[UIImage imageNamed:@"nonpic_80.png"]];
     profileView.frame = CGRectMake(10.0, 10.0, 80.0, 80.0);
     [profileView setUserInteractionEnabled:YES];
-
     [header addSubview:profileView];
 
     uname=[[UITextField alloc] initWithFrame:CGRectMake(100.0,10.0,100.0, 30.0)];
@@ -88,41 +92,57 @@
         forControlEvents:UIControlEventTouchUpInside];
     [header addSubview:followBtn];
     
-    self.profileTable=[[[UITableView alloc] initWithFrame:CGRectMake(0.0, 100.0, 320.0, 360.0) style:UITableViewStylePlain] autorelease];
-    self.profileTable.dataSource=self;
-    self.profileTable.delegate=self;
-    [self.view addSubview:self.profileTable];
-    
-    NSLog(@"%i",(int)self.uidx);
     NSMutableArray *regVal = [[NSMutableArray alloc] init];
     //[regVal addObject:(NSInteger *)self.uidx];
     [regVal addObject:[[GlobalStn sharedSingleton] ukey]];
-
-    [self HttpAuth:regVal];
-    [regVal release];
-    
-   
-}
-/*
--(void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:(BOOL)animated];
-    NSLog(@"viewWillAppear");
-    
-    NSMutableArray *regVal = [[NSMutableArray alloc] init];
-    //[regVal addObject:self.uidx];
-    [regVal addObject:[[GlobalStn sharedSingleton] ukey]];
     
     [self HttpAuth:regVal];
     [regVal release];
 
+    
+        //[self loadPage:0];
+    //[self loadPage:1];
+     
+       
+    //[self getPersonalList];
 }
- */
+
+
+- (void)scrollViewDidScroll:(UIScrollView *)sender {
+    // Switch the indicator when more than 50% of the previous/next page is visible
+    CGFloat pageWidth = scrollView.frame.size.width;
+    int page = floor((scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
+	
+    
+}
+-(void)getPersonalList:(NSMutableArray *)personalValue{
+    NSDictionary *dic;
+    dic = [[NSDictionary alloc] initWithObjectsAndKeys:[[GlobalStn sharedSingleton] uname],@"uname" , @"이메일이다.", @"email", nil];
+    NSMutableArray *valueData=[NSMutableArray array];
+    [valueData addObject:dic];
+    
+    CGRect progressframe=CGRectMake(10.0, 5.0, 200.0, 20.0);
+    NSString *geturl=[NSString stringWithFormat:@"%@",USER_PHOTO_URL];
+    progressbar=[[HttpWrapper alloc] requestUrl:geturl values:valueData progressBarFrame:(CGRect)progressframe image:nil loc:nil delegate:self];
+    NSLog(@"---%@",geturl);
+    [self.progressBack addSubview:progressbar];
+}
+- (void)httpProgBar:(HttpWrapper *)httpProgBar didFinishWithData:(NSData *)fileData{
+    id stringReply;
+    stringReply = (NSString *)[[NSString alloc] initWithData:fileData encoding:NSUTF8StringEncoding];
+    self.jsonArray=[stringReply JSONValue];
+    [self.profileTable reloadData];
+}
+- (void)httpProgBar:(HttpWrapper *)httpProgBar didFailWithError:(NSError *)error{
+    NSLog(@"error %@",error);
+}
+- (void)httpBarUpdated:(HttpWrapper *)httpProgBar{
+    
+}
 -(void)followAsync{
-    
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:FOLLOWCHK_URL] 
                                                            cachePolicy:NSURLRequestUseProtocolCachePolicy
                                                        timeoutInterval:30.0];
-    
     [request setHTTPMethod:@"POST"];
     
     NSString *boundary = [NSString stringWithString:@"-----------14737809831466499882746641449"];
@@ -172,12 +192,11 @@
     }
 }
 -(void)followSubmit:(id)sender{
-    NSLog(@" %@",[sender tag]);
+    NSLog(@"followsubmit %@",[sender tag]);
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:FOLLOW_SUBMIT_URL] 
                                                            cachePolicy:NSURLRequestUseProtocolCachePolicy
                                                        timeoutInterval:30.0];
-    
     [request setHTTPMethod:@"POST"];
     
     NSString *boundary = [NSString stringWithString:@"-----------14737809831466499882746641449"];
@@ -209,16 +228,13 @@
     
     httpResponse = (NSHTTPURLResponse *)iresponse;
     int statusCode = [httpResponse statusCode];  
-    NSLog(@"HTTP Response Headers %@", [httpResponse allHeaderFields]); 
-    //NSLog(@"HTTP Status code: %d", statusCode);
+
     
-    NSLog(@"submit %@",stringReply);
+    NSLog(@"submit %@ %@ %d",[[GlobalStn sharedSingleton] uname],[[self.jsonArray objectAtIndex:0] objectForKey:@"name"],[sender tag]);
     if(statusCode==200) {
-        
         if( [[[GlobalStn sharedSingleton] ukey] isEqualToString:[[self.jsonArray objectAtIndex:0] objectForKey:@"ukey"]] ){
        
         }else{
-            
             int c;
             if([sender tag]==0){
                 c=[follower.text intValue] - 1;
@@ -228,7 +244,6 @@
                 [followBtn setTitle:@"unfollow" forState:UIControlStateNormal];
             }
             follower.text=[NSString stringWithFormat:@"%d",c];
-                
         }
     }else{
         NSLog(@"http 오류.");
@@ -236,17 +251,63 @@
 
 }
 -(void)profilerewrite{
-    NSLog(@"%@",[self.jsonArray objectAtIndex:0]);
     profileView.imageURL = [NSURL URLWithString:[[self.jsonArray objectAtIndex:0] objectForKey:@"pimg"]];
     uname.text=[[self.jsonArray objectAtIndex:0] objectForKey:@"name"];
     follow.text=[[self.jsonArray objectAtIndex:0] objectForKey:@"follow"];
     follower.text=[[self.jsonArray objectAtIndex:0] objectForKey:@"follower"];
-    if( [[[GlobalStn sharedSingleton] ukey] isEqualToString:[[self.jsonArray objectAtIndex:0] objectForKey:@"ukey"]] ){
-    }else{
+    
+    NSLog(@"%@ == %@",[[GlobalStn sharedSingleton] ukey],[[self.jsonArray objectAtIndex:0] objectForKey:@"ukey"]);
+    NSLog(@"%@",self.jsonArray);
+    if( [[[GlobalStn sharedSingleton] ukey] isEqualToString:[[self.jsonArray objectAtIndex:0] objectForKey:@"ukey"]] )
+        followBtn.hidden = true;
+    
+    NSMutableArray *controllers = [[NSMutableArray alloc] init];
+    for (unsigned i = 0; i < [self.jsonArray count]; i++) {
+        [controllers addObject:[NSNull null]];
+    }
+    self.viewControllers = controllers;
+    [controllers release];
+	
+    scrollView=[[UIScrollView alloc] initWithFrame:CGRectMake(13.0,105.0, 320.0, 300.0)];
+    scrollView.backgroundColor=[UIColor whiteColor];
+    scrollView.pagingEnabled = YES;
+    scrollView.contentSize = CGSizeMake(scrollView.frame.size.width, scrollView.frame.size.height);
+    scrollView.showsHorizontalScrollIndicator = NO;
+    scrollView.showsVerticalScrollIndicator = NO;
+    scrollView.scrollsToTop = NO;
+    scrollView.delegate = self;
+	
+    [self.view addSubview:scrollView];
+    
+    float h=0;
+    float pos=0;
+    int sn=0;
+    int cn=1;
+    int gap=10;
+    for(int x=0;x<[[self.jsonArray objectAtIndex:1] count];x++){
+        
+        imageView = [[EGOImageView alloc] initWithPlaceholderImage:[UIImage imageNamed:@"nonpic_80.png"]];
+        imageView.frame = CGRectMake(pos, h, 50.0, 50.0);
+        [imageView setUserInteractionEnabled:YES];
+        [scrollView addSubview:imageView];
+        
+        imageView.imageURL = [NSURL URLWithString:[[[self.jsonArray objectAtIndex:1] objectAtIndex:x] objectForKey:@"img"]];
+        sn = x + 1;
+        if(sn%5==0){
+            pos=0;
+            h=(50.0 + gap) * cn;
+            cn++;
+        }else{
+            pos=(50.0 + gap) * (sn%5);
+        }
+        
+        NSLog(@"-- %d",sn%5);
+       
 
     }
-
+   
     [self followAsync];
+    //[self.profileTable reloadData];
 }
 -(BOOL)HttpAuth:(NSMutableArray *)regValue{
     NetworkStatus netStatus = [[Reachability reachabilityForInternetConnection] currentReachabilityStatus];
@@ -307,20 +368,23 @@
     }
     return TRUE;
 }
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
-	return 1;
+	return [[self.jsonArray objectAtIndex:1] count];
 }
+/*
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-   
-        return [self.jsonArray count];
+    NSLog(@"%@",[self.jsonArray objectAtIndex:1]);
+        return [[self.jsonArray objectAtIndex:1] count];
    
 }
+
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     
     NSString *title = nil;
  
-     title = [[[self.jsonArray objectAtIndex:section] valueForKey:@"date"]objectAtIndex:0];
+     title = @"test";
  
 	return title;
 }
@@ -331,13 +395,13 @@
         return 0;
     }
 }
-
+*/
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
    if (indexPath.section == 0 && indexPath.row == 0) {     
-      return 80;
+      return 300;
    }
-   return 80;
+   return 300;
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 
@@ -346,14 +410,33 @@
     
     static NSString *CellID = @"CIdentifier";
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellID];
-    if(cell == nil) {
+    ProfileImageCell *cell = (ProfileImageCell *)[tableView dequeueReusableCellWithIdentifier:CellID]; // changed this
+	
+	if (cell == nil) {
+		cell = [[[ProfileImageCell alloc] initWithFrame:CGRectZero reuseIdentifier:CellID] autorelease]; // changed this
+		cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+	}
+
+    /*if(cell == nil) {
         cell =  [[[UITableViewCell alloc] 
                   initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellID] autorelease];
         cell.accessoryType = UITableViewCellAccessoryNone;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
+        imageView = [[EGOImageView alloc] initWithPlaceholderImage:[UIImage imageNamed:@"nonpic_80.png"]];
+        imageView.frame = CGRectMake(10.0, 10.0, 200.0, 200.0);
+        [imageView setUserInteractionEnabled:YES];
+        [cell addSubview:imageView];
     }
-      
+    //cell.textLabel.text=[[self.jsonArray objectAtIndex:indexPath.row] objectForKey:@"name"];
+   
+     imageView.imageURL = [NSURL URLWithString:[[[self.jsonArray objectAtIndex:1] objectAtIndex:indexPath.row] objectForKey:@"img"]];
+     */
+    
+    NSDictionary *itemAtIndex = (NSDictionary *)[self.jsonArray objectAtIndex:indexPath.row];
+	[cell setData:itemAtIndex];
+    
+    NSLog(@"--%d - %@",indexPath.section,[[[self.jsonArray objectAtIndex:1] objectAtIndex:indexPath.row]objectForKey:@"img"]);
     return cell;
 }
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
@@ -437,10 +520,9 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
 - (void)dealloc
 {
     [indicator release];
-    [header release];
-    [uname release],uname=nil;
-    [follow release],follow=nil;
-    [follower release],follower=nil;
+    [uname release];
+    [follow release];
+    [follower release];
     [profileView release];
     [jsonArray release],jsonArray=nil;
     [followBtn release];

@@ -9,8 +9,7 @@
 #import "CustomTabbar.h"
 #import "photoPickerViewController.h"
 
-@implementation CustomTabbar
-
+@implementation CustomTabBar
 
 @synthesize btn1, btn2, btn3, btn4;
 
@@ -31,6 +30,22 @@
 			break;
 		}
 	}
+}
+
+- (void)hideNewTabBar 
+{
+    self.btn1.hidden = 1;
+    self.btn2.hidden = 1;
+    self.btn3.hidden = 1;
+    self.btn4.hidden = 1;
+}
+
+- (void)showNewTabBar 
+{
+    self.btn1.hidden = 0;
+    self.btn2.hidden = 0;
+    self.btn3.hidden = 0;
+    self.btn4.hidden = 0;
 }
 
 -(void)addCustomElements
@@ -88,7 +103,6 @@
 {
 	int tagNum = [sender tag];
 	[self selectTab:tagNum];
-    
 }
 
 - (void)selectTab:(int)tabID
@@ -122,17 +136,7 @@
 	}	
 	
 	self.selectedIndex = tabID;
-	//if(tabID==2){
-    //    photoPickerViewController *camera=[[[photoPickerViewController alloc]init] autorelease];
-    //    [self presentModalViewController:camera animated:NO];
-   // }else{
-        if (self.selectedIndex == tabID) {
-            UINavigationController *navController = (UINavigationController *)[self selectedViewController];
-            [navController popToRootViewControllerAnimated:YES];
-        } else {
-            self.selectedIndex = tabID;
-        }
-    //}
+	
 	
 }
 
@@ -146,3 +150,4 @@
 }
 
 @end
+

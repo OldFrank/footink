@@ -10,7 +10,7 @@
 
 #import "photoPickerViewController.h"
 #import "PhotoRoot.h"
-#import "withRootView.h"
+#import "WithRootViewController.h"
 #import "SettingView.h"
 #import "LoginView.h"
 #import "tripMapViewController.h"
@@ -18,9 +18,10 @@
 #import "FBConnect.h"
 #import "FBSession.h"
 #import "SpotListViewController.h"
-//#import "CustomTabbar.h"
+#import "CustomTabbar.h"
 
 @class FacebookAPIViewController;
+
 
 @interface footinkAppDelegate : NSObject <UIApplicationDelegate, UITabBarControllerDelegate> {
     UITabBarController *tabController;
@@ -29,18 +30,21 @@
     //UINavigationController *navigationController;
     FBSession *_fsession;
     FacebookAPIViewController *FBviewController;
-    UIImageView* tabBarArrow;
+
 }
 
-@property (nonatomic, retain) IBOutlet FacebookAPIViewController *FBviewController;
+@property (nonatomic, retain) FacebookAPIViewController *FBviewController;
 @property (nonatomic,retain) FBSession *_fsession;
-@property (nonatomic, retain) IBOutlet UIWindow *window;
-@property (nonatomic, retain) IBOutlet UITabBarController *tabController;
-@property (nonatomic, retain) IBOutlet UITextView *textView;
-@property (nonatomic, retain) UIImageView* tabBarArrow;
+@property (nonatomic, retain) UIWindow *window;
+
+@property (nonatomic, retain) UITextView *textView;
+
+@property (nonatomic, retain) UITabBarController *tabController;
+
 //@property (nonatomic, retain) IBOutlet UINavigationController *navigationController;
 
 - (NSArray *)ChkAuth;
 - (void)initAuth;
 -(void)carrierTelCountryCode;
+-(BOOL)hasValidLogin;
 @end

@@ -17,6 +17,7 @@
 
 @implementation LoginView
 
+
 @synthesize NameInput;
 @synthesize EmailInput;
 @synthesize PwdInput;
@@ -26,17 +27,23 @@
 @synthesize jsonArray;
 @synthesize activeField;
 
-@synthesize connection;
 @synthesize imageData;
-@synthesize response;
-@synthesize responseData;
 
-@synthesize cameraController;
+@synthesize cameraController,progressBack,viewCont;
 
+- (id) init{
+    
+    self=[super init];
+    if(self!=nil){
+        self.title=@"Log IN";
+    }
+    return self;
+}
 -(void)viewDidLoad{
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque];
+
     self.scrollView=[[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 480.0)];
-    NSLog(@"%f",self.view.frame.size.height);
+    
     self.scrollView.contentSize = self.view.frame.size;
     [self.scrollView setBackgroundColor:[UIColor grayColor]];
      self.scrollView.scrollEnabled = YES;
@@ -62,7 +69,7 @@
     [imageview setBackgroundColor:[UIColor blueColor]];
 
     imageview.image=[UIImage imageNamed:@"Icon.png"];
-    
+    imageAttachChk=NO;
     [self.scrollView addSubview:imageview];
     
     UIButton *TakePhoto=[[UIButton alloc] initWithFrame:CGRectMake(200.0, 55.0, 100.0, 40.0)];
@@ -81,6 +88,8 @@
     [self.scrollView addSubview:NameText];
     
     NameInput = [[UITextField alloc] initWithFrame:CGRectMake(90.0, 170.0, 200.0, 30.0)];
+    NameInput.autocapitalizationType=UITextAutocapitalizationTypeNone;
+    NameInput.keyboardType=UIKeyboardTypeDefault;
     NameInput.delegate = self;
     
     [NameInput setBorderStyle:UITextBorderStyleRoundedRect];
@@ -96,6 +105,8 @@
     
     EmailInput = [[UITextField alloc] initWithFrame:CGRectMake(90.0, 210.0, 200.0, 30.0)];
     [EmailInput setBorderStyle:UITextBorderStyleRoundedRect];
+    EmailInput.autocapitalizationType=UITextAutocapitalizationTypeNone;
+    EmailInput.keyboardType = UIKeyboardTypeEmailAddress;
     EmailInput.delegate=self;
     [self.scrollView addSubview:EmailInput];
     
@@ -124,20 +135,11 @@
     [sendButton addTarget:self action:@selector(sendLogin) forControlEvents:UIControlEventTouchUpInside];
     [self.scrollView addSubview:sendButton];
     
-    uploadProgress=[[UIProgressView alloc] initWithFrame:CGRectMake(90.0, 300.0, 200.0, 20.0)];
-    [self.scrollView addSubview:uploadProgress];
-    
-    uploadProgressMessage=[[UILabel alloc] initWithFrame:CGRectMake(90.0, 320.0, 150.0, 30.0)];
-    uploadProgressMessage.textAlignment = UITextAlignmentLeft;
-    uploadProgressMessage.text=@"ready";
-    uploadProgressMessage.font=[UIFont systemFontOfSize:12.0f];
-    [self.scrollView addSubview:uploadProgressMessage];
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
-    
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
+    progressBack=[[UIView alloc] initWithFrame:CGRectMake(0.0, 310.0, 200.0, 20.0)];
+    [self.scrollView addSubview:progressBack];
+
     [self registerForKeyboardNotifications];
     keyboardVisible = NO;
-
 }
 -(void)actTaken{
 
@@ -167,11 +169,9 @@
 -(void) actionSheet: (UIActionSheet *)anActionSheet didDismissWithButtonIndex: (NSInteger) buttonIndex
 {
     [anActionSheet dismissWithClickedButtonIndex:buttonIndex animated:NO];
-    
     if (buttonIndex == [anActionSheet cancelButtonIndex]) {
        
     }
-    
     if (buttonIndex == 0) {
         [self CameraOpen];
     } else if (buttonIndex == 1) {
@@ -185,7 +185,7 @@
     cameraController.sourceType = UIImagePickerControllerSourceTypeCamera;
     cameraController.cameraViewTransform = CGAffineTransformScale(self.cameraController.cameraViewTransform,1.13f,1.13f);
     cameraController.delegate = self;
-    [cameraController setAllowsEditing:NO]; 
+    [cameraController setAllowsEditing:YES]; 
     self.cameraController.showsCameraControls = YES;
     self.cameraController.navigationBarHidden = YES;
     [self.view.superview addSubview:cameraController.view];
@@ -206,6 +206,7 @@
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)image editingInfo:(NSDictionary *)editingInfo
 {
    imageview.image = image;
+    imageAttachChk=YES;
    //UIImage *originalImage = [editingInfo objectForKey:UIImagePickerControllerOriginalImage];
    [picker dismissModalViewControllerAnimated:YES];
 }
@@ -253,6 +254,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info {
 
 - (void)keyboardWasShown:(NSNotification*)aNotification
 {
+   
     NSDictionary* info = [aNotification userInfo];
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
     NSLog(@"--%f",kbSize.height);
@@ -336,208 +338,88 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info {
     return status;
 }
 -(BOOL)HttpAuth:(NSMutableArray *)regValue{
-    
     if ([self checkNetwork]==0) {
         UIAlertView *uAlert=[[UIAlertView alloc] initWithTitle:@"네트워크 오류" message:@"인터넷이 연결되어 있지 않습니다." delegate:self cancelButtonTitle:@"확인" otherButtonTitles:nil];
         [uAlert show];
         return FALSE;
-    }else{
-        uploadProgress.progress = 0.0f;
-        uploadProgressMessage.text = @"uploading";
-        
-         
-        NSArray *recvData=regValue;
-        imageData = UIImageJPEGRepresentation(self.imageview.image,90);
-        
-        NSDate *currentDate=[NSDate date];
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        
-        [dateFormatter setDateFormat:@"yyyyMMddHHmmss"];
-        //timezone설정
-        //NSTimeZone *usTimeZone = [NSTimeZone timeZoneWithName:@"US/Pacific"];
-        //NSTimeZone *usTimeZone = [NSTimeZone timeZoneWithName:@"UTC"];
-
-        NSTimeZone *usTimeZone = [NSTimeZone timeZoneWithName:@"Asia/Seoul"];
-        [dateFormatter setTimeZone:usTimeZone];
-
-        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:AUTH_URL] 
-                                                               cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                                           timeoutInterval:30.0];
-        [request setHTTPMethod:@"POST"];
-
-        NSString *boundary = [NSString stringWithString:@"-----------14737809831466499882746641449"];
-        NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
-        [request addValue:contentType forHTTPHeaderField:@"Content-Type"];
-        
-        NSMutableData *body = [NSMutableData data];
-        [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-        //post append
-        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"uname\"\r\n\r\n%@",[recvData objectAtIndex:0]] dataUsingEncoding:NSUTF8StringEncoding] ];
-        [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding] ];
-        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"uemail\"\r\n\r\n%@",[recvData objectAtIndex:1]] dataUsingEncoding:NSUTF8StringEncoding] ];
-  
-        [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding] ];
-        
-        //file attach
-        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"pimg\"; filename=\"%@.jpg\"\r\n",[dateFormatter stringFromDate:currentDate]] dataUsingEncoding:NSUTF8StringEncoding]];
-        
-        [body appendData:[[NSString stringWithString:@"Content-Type: application/octet-stream\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-        [body appendData:[NSData dataWithData:self.imageData]];
-        [body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-      
-        [request setHTTPBody:body];
-
-        
-        
-        
-
-        self.responseData = [NSMutableData data];
-        self.connection = [NSURLConnection connectionWithRequest:request delegate:self];
-        
-        
-               
-        //if(stringReply==nil) return FALSE;
-        
-        //if(stringReply!=nil && statusCode==200) {
-        //    self.jsonArray=[stringReply JSONValue];
-       //     NSLog(@"%@",self.jsonArray);
-       // }else{
-        //    NSLog(@"http 오류.");
-        //}
     }
+    NSArray *recvData=regValue;
+    NSMutableArray *valueData=[NSMutableArray array];
+    NSLog(@"name input %@",[recvData objectAtIndex:0]);
+    [valueData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:[recvData objectAtIndex:0],@"username", nil]];
+    [valueData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:[recvData objectAtIndex:1],@"uemail", nil]];
+    //[valueData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:[recvData objectAtIndex:2],@"passwdcfm", nil]];
+    
+    CGRect progressframe=CGRectMake(10.0, 5.0, 200.0, 20.0);
+    progressbar=[[HttpWrapper alloc] requestUrl:AUTH_URL values:valueData progressBarFrame:(CGRect)progressframe image:imageview.image loc:nil delegate:self];
+    [self.progressBack addSubview:progressbar];
+    
     return TRUE;
 }
 #pragma mark URL Connection Event Handlers
 
-
-// Final event, memory is cleaned up at the end of this.
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-    self.connection = nil;
-    self.response = nil;
-    
-    uploadProgress.progress = 0.0f;
-    uploadProgressMessage.text = @"An error occurred, retrying in 10 seconds...";
-    
-    retryCounter = 10;
-    [self performSelector:@selector(retry) withObject:nil afterDelay:1.0f];
-}
-
-
-// Final event, memory is cleaned up at the end of this.
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-    self.connection = nil;
+- (void)httpProgBar:(HttpWrapper *)httpProgBar didFinishWithData:(NSData *)fileData{
     
     id stringReply;
-    stringReply = (NSString *)[[NSString alloc] initWithData:self.responseData encoding:NSUTF8StringEncoding];
+    stringReply = (NSString *)[[NSString alloc] initWithData:fileData encoding:NSUTF8StringEncoding];
+    self.jsonArray=[stringReply JSONValue];
+    NSLog(@"%@",self.jsonArray);
+    [self AddAuthRecord];
     
-    NSLog(@"reply from server: %@", stringReply);
-    //NSURLResponse *lresponse;
-    NSHTTPURLResponse *httpResponse;
-    httpResponse = (NSHTTPURLResponse *)self.response;
-     
-    NSLog(@"HTTP Response Headers %@", [httpResponse allHeaderFields]); 
-    NSLog(@"HTTP Status code: %d", [self.response statusCode]);
-
-    if ([self.response statusCode] == 200) {
-        uploadProgress.progress = 1.0f;
-        
-        /*NSString *responseString = [[[NSString alloc] initWithBytes:[self.responseData bytes]
-                                                             length:[self.responseData length]
-                                                           encoding:NSUTF8StringEncoding] autorelease];
-        responseString =
-        [responseString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        
-        NSString *successContinueUrl = CONTINUE_URL;
-        
-        successContinueUrl =
-        [successContinueUrl stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        
-        BOOL hasQuestionMark = [successContinueUrl rangeOfString:@"?"].location != NSNotFound;
-        
-        successContinueUrl =
-        [successContinueUrl stringByAppendingString:hasQuestionMark ? @"&" : @"?"];
-        successContinueUrl = [successContinueUrl stringByAppendingFormat:@"success=1&response=%@",
-                              responseString];
-        
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:successContinueUrl]];
-         */
-         self.jsonArray=[stringReply JSONValue];
-        [self AddAuthRecord];
-        [self dismissModalViewControllerAnimated:YES];
-    } else {
-        uploadProgress.progress = 0.0f;
-        uploadProgressMessage.text = @"An error occurred, retrying in 10 seconds...";
-        
-        retryCounter = 10;
-        [self performSelector:@selector(retry) withObject:nil afterDelay:1.0f];
-    }
+   
+    PhotoRoot *cont=[[PhotoRoot alloc] init];
+    [self.navigationController popToViewController:cont animated:YES];
+    //self.tabBarController.selectedIndex=0;
+}
+- (void)httpProgBar:(HttpWrapper *)httpProgBar didFailWithError:(NSError *)error{
     
-    self.response = nil;
 }
-
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)newData {
-    [responseData appendData:newData];
-}
-
-
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)newResponse {
-    self.response = (NSHTTPURLResponse *) newResponse;
-}
-- (void)connection:(NSURLConnection *)connection
-   didSendBodyData:(NSInteger)bytesWritten
- totalBytesWritten:(NSInteger)totalBytesWritten
-totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
-    uploadProgress.progress = (float) totalBytesWritten / totalBytesExpectedToWrite;
-}
-- (void)retry {
-    retryCounter--;
+- (void)httpBarUpdated:(HttpWrapper *)httpProgBar{
     
-    if (retryCounter <= 0) {
-        [self sendLogin];
-    } else {
-        uploadProgressMessage.text =
-        [NSString stringWithFormat:@"An error occurred, retrying in %d second%@...",
-         retryCounter,
-         retryCounter != 1 ? @"s" : @""];
-        
-        [self performSelector:@selector(retry) withObject:nil afterDelay:1.0f];
-    }
 }
-- (void)sendLogin{
-    NSLog(@"sendlogin");
+- (BOOL)sendLogin{
+
     if ([self checkNetwork]==0) {
-
         UIAlertView *uAlert=[[UIAlertView alloc] initWithTitle:@"네트워크 오류" message:@"인터넷이 연결되어 있지 않습니다." delegate:self cancelButtonTitle:@"확인" otherButtonTitles:nil];
         [uAlert show];
         NSLog(@"네트워크오류.");
     }else{
-        //NSLog(@"%@",EmailInput.text);
+        NSLog(@"%@",NameInput.text);
         
         NSMutableArray *regVal = [[NSMutableArray alloc] init];
         [regVal addObject:NameInput.text];
         [regVal addObject:EmailInput.text];
         //[regVal addObject:PwdInput.text];
-
+        
+        if(imageAttachChk==NO){
+            UIAlertView *imgAlert=[[UIAlertView alloc] initWithTitle:@"입력 오류" message:@"프로필 이미지가 첨부되지 않았습니다." delegate:self cancelButtonTitle:@"확인" otherButtonTitles:nil];
+            [imgAlert show];
+            return FALSE;
+        }
+        if(NameInput.text==nil){
+            UIAlertView *nicAlert=[[UIAlertView alloc] initWithTitle:@"입력 오류" message:@"닉네임이 입력되지 않았습니다." delegate:self cancelButtonTitle:@"확인" otherButtonTitles:nil];
+            [nicAlert show];
+            return FALSE;
+        }
         BOOL e=[self IsValidEmail:EmailInput.text];
         if(e==FALSE){
-            NSLog(@"email false");
-            UIAlertView *uAlert=[[UIAlertView alloc] initWithTitle:@"네트워크 오류" message:@"이메일 형식이 옳지 않습니다." delegate:self cancelButtonTitle:@"확인" otherButtonTitles:nil];
+            UIAlertView *uAlert=[[UIAlertView alloc] initWithTitle:@"입력 오류" message:@"이메일 형식이 옳지 않습니다." delegate:self cancelButtonTitle:@"확인" otherButtonTitles:nil];
             [uAlert show];
+            return FALSE;
         }else{
-            NSLog(@"email true");
             BOOL f=[self HttpAuth:regVal];
             
             if(f==TRUE){
-               
-               
+
             }else{
                 UIAlertView *uAlert=[[UIAlertView alloc] initWithTitle:@"가입 오류" message:@"등록에 실패하였습니다." delegate:self cancelButtonTitle:@"확인" otherButtonTitles:nil];
                 [uAlert show];
                 NSLog(@"가입오류.");
+                return FALSE;
             }
         }
     }
+    return TRUE;
 }
 
 -(BOOL)IsValidEmail:(NSString *)checkString

@@ -1,9 +1,9 @@
 //
-//  photoPickerViewController.m
-//  photoPicker
+// photoPickerViewController.m
+// photoPicker
 //
-//  Created by Yongsik Cho on 11. 4. 11..
-//  Copyright 2011 ag. All rights reserved.
+// Created by Yongsik Cho on 11. 4. 11..
+// Copyright 2011 ag. All rights reserved.
 //
 
 #import "photoPickerViewController.h"
@@ -14,7 +14,8 @@
 #import "GlobalStn.h"
 #import "Reachability.h"
 #import "photoEditController.h"
-
+//#import "withViewcontroller.h"
+#import "WithRootViewController.h"
 static void *AVCamFocusModeObserverContext = &AVCamFocusModeObserverContext;
 
 @interface photoPickerViewController () <UIGestureRecognizerDelegate>
@@ -34,7 +35,7 @@ static void *AVCamFocusModeObserverContext = &AVCamFocusModeObserverContext;
 
 @implementation photoPickerViewController
 
-@synthesize imgPicker,scanModal;
+@synthesize imgPicker,scanModal,irisModal;
 @synthesize captureManager;
 @synthesize scanningLabel;
 
@@ -43,13 +44,14 @@ static void *AVCamFocusModeObserverContext = &AVCamFocusModeObserverContext;
 @synthesize focusModeLabel;
 @synthesize videoPreviewView,captureVideoPreviewLayer;
 
-
 BOOL gLogging = FALSE;
 
 - (id) init{
     self=[super init];
     if(self!=nil){
         self.title=@"camera";
+        
+  
         //self.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"camera" image:nil tag:1] autorelease];
         //[[UIApplication sharedApplication] setStatusBarHidden:YES];
     }
@@ -58,20 +60,20 @@ BOOL gLogging = FALSE;
 
 - (NSString *)stringForFocusMode:(AVCaptureFocusMode)focusMode
 {
-	NSString *focusString = @"";
-	
-	switch (focusMode) {
-		case AVCaptureFocusModeLocked:
-			focusString = @"locked";
-			break;
-		case AVCaptureFocusModeAutoFocus:
-			focusString = @"auto";
-			break;
-		case AVCaptureFocusModeContinuousAutoFocus:
-			focusString = @"continuous";
-			break;
-	}
-	return focusString;
+    NSString *focusString = @"";
+    
+    switch (focusMode) {
+        case AVCaptureFocusModeLocked:
+            focusString = @"locked";
+            break;
+        case AVCaptureFocusModeAutoFocus:
+            focusString = @"auto";
+            break;
+        case AVCaptureFocusModeContinuousAutoFocus:
+            focusString = @"continuous";
+            break;
+    }
+    return focusString;
 }
 -(void)viewDidLoad{
     [super viewDidLoad];
@@ -85,6 +87,17 @@ BOOL gLogging = FALSE;
         [self AVModal];
         [[UIApplication sharedApplication] setStatusBarHidden:YES];
         [[GlobalStn sharedSingleton] setPickerChk:0];
+    }else if((int)[[GlobalStn sharedSingleton] pickerChk]==4){ // with 카메라 촬영 이후 진입
+        [[GlobalStn sharedSingleton] setPickerChk:1];
+        //[[UIApplication sharedApplication] setStatusBarHidden:NO];
+        
+        //self.tabBarController.tabBar.hidden = NO;
+        self.tabBarController.selectedIndex = 1;
+        
+        //WithRootViewController *control=[[WithRootViewController alloc] init];
+        //control.hidesBottomBarWhenPushed=YES;
+        //[self.navigationController pushViewController:control animated:NO];
+        
     }else if((int)[[GlobalStn sharedSingleton] pickerChk]==3){ // 카메라 촬영 이후 진입
         [[GlobalStn sharedSingleton] setPickerChk:1];
         [[UIApplication sharedApplication] setStatusBarHidden:NO];
@@ -99,8 +112,8 @@ BOOL gLogging = FALSE;
 }
 - (void) viewWillDisappear:(BOOL)animated {
     //if((int)[[GlobalStn sharedSingleton] pickerChk]!=0){
-        NSLog(@"removeObserver");
-        [[NSNotificationCenter defaultCenter] removeObserver:self];
+    //NSLog(@"removeObserver");
+    //[[NSNotificationCenter defaultCenter] removeObserver:self];
     //}
 }
 - (void)dealloc
@@ -108,17 +121,16 @@ BOOL gLogging = FALSE;
     NSLog(@"dealloc");
     [captureManager release];
     captureManager=nil;
-
+    
     [scanModal release];
     scanModal=nil;
+    [irisModal release];
+    irisModal=nil;
     [imgPicker release], imgPicker=nil;
-
+    
     [videoPreviewView release];
-	[captureVideoPreviewLayer release];
+    [captureVideoPreviewLayer release];
     [scanningLabel release];
-
-
-
 
     [super dealloc];
 }
@@ -132,14 +144,14 @@ BOOL gLogging = FALSE;
     
     host_port = mach_host_self();
     host_size = sizeof(vm_statistics_data_t) / sizeof(integer_t);
-    host_page_size(host_port, &pagesize);        
+    host_page_size(host_port, &pagesize);
     
     vm_statistics_data_t vm_stat;
     
     if (host_statistics(host_port, HOST_VM_INFO, (host_info_t)&vm_stat, &host_size) != KERN_SUCCESS)
         NSLog(@"Failed to fetch vm statistics");
     
-    /* Stats in bytes */ 
+    /* Stats in bytes */
     natural_t mem_used = (vm_stat.active_count +
                           vm_stat.inactive_count +
                           vm_stat.wire_count) * pagesize;
@@ -150,21 +162,24 @@ BOOL gLogging = FALSE;
 -(void)AVModal
 {
     if (self.captureManager == nil) {
-        
-		[self setCaptureManager:[[AvCaptureManager alloc] init]];
-		
+        [self setCaptureManager:[[AvCaptureManager alloc] init]];
     }
     [[self captureManager] setDelegate:self];
     
     if ([[self captureManager] setupSession]) {
         [[UIApplication sharedApplication] setStatusBarHidden:YES];
-        AVCaptureVideoPreviewLayer *newCaptureVideoPreviewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:[[self captureManager] avsession]];
         
+        AVCaptureVideoPreviewLayer *newCaptureVideoPreviewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:[[self captureManager] avsession]];
+        irisModal = [[UIViewController alloc] init];
+        irisModal.view.backgroundColor=[UIColor blackColor];
         scanModal = [[UIViewController alloc] init];
+        scanModal.view.backgroundColor=[UIColor clearColor];
+        [irisModal.view addSubview:scanModal.view];
         
         CALayer *viewLayer = [scanModal.view layer];
         [viewLayer setMasksToBounds:YES];
         
+                
         CGRect bounds = [scanModal.view bounds];
         [newCaptureVideoPreviewLayer setFrame:bounds];
         
@@ -178,18 +193,29 @@ BOOL gLogging = FALSE;
         [self setCaptureVideoPreviewLayer:newCaptureVideoPreviewLayer];
         [newCaptureVideoPreviewLayer release];
         
-        UIImageView *overlayImageView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"overlaygraphic.png"]] autorelease];
+        UIImageView *overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"overlaygraphic.png"]];
         [overlayImageView setFrame:CGRectMake(0.0, 0.0, 320, 480)];
-        
         [scanModal.view addSubview:overlayImageView];
+        [overlayImageView release];
+        self.tabBarController.view.backgroundColor=[UIColor clearColor];
         
-        [self presentModalViewController:scanModal animated:NO];
+        CATransition *transition = [CATransition animation];
+        transition.duration = 1.2f;
+        transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
+        transition.type = kCATransitionReveal;
+        transition.subtype = kCATransitionFromBottom;
+        //transitioning = YES;
+        transition.delegate = self;
+
+        [self presentModalViewController:irisModal animated:NO];
+        [irisModal.view.layer addAnimation:transition forKey:nil];
+        
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [[[self captureManager] avsession] startRunning];
         });
         
-        [self updateButtonStates];
+        //[self updateButtonStates];
         
         UIButton *faceButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [faceButton setImage:[UIImage imageNamed:@"btn_face.png"] forState:UIControlStateNormal];
@@ -227,10 +253,10 @@ BOOL gLogging = FALSE;
         
         /*[scanningLabel setBackgroundColor:[UIColor clearColor]];
          [scanningLabel setFont:[UIFont fontWithName:@"Courier" size: 18.0]];
-         [scanningLabel setTextColor:[UIColor redColor]]; 
+         [scanningLabel setTextColor:[UIColor redColor]];
          [scanningLabel setText:@"Saving..."];
          [scanningLabel setHidden:YES];
-         [scanModal.view addSubview:scanningLabel];	
+         [scanModal.view addSubview:scanningLabel];
          */
         
         /*
@@ -240,25 +266,21 @@ BOOL gLogging = FALSE;
          [newFocusModeLabel setTextColor:[UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.50]];
          AVCaptureFocusMode initialFocusMode = [[[captureManager videoInput] device] focusMode];
          [newFocusModeLabel setText:[NSString stringWithFormat:@"focus: %@", [self stringForFocusMode:initialFocusMode]]];
-         
          [scanModal.view addSubview:newFocusModeLabel];
          [self addObserver:self forKeyPath:@"captureManager.videoInput.device.focusMode" options:NSKeyValueObservingOptionNew context:AVCamFocusModeObserverContext];
          [self setFocusModeLabel:newFocusModeLabel];
          [newFocusModeLabel release];
-         
          // Add a single tap gesture to focus on the point tapped, then lock focus
          UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapToAutoFocus:)];
          [singleTap setDelegate:self];
          [singleTap setNumberOfTapsRequired:1];
          [scanModal.view addGestureRecognizer:singleTap];
-         
          // Add a double tap gesture to reset the focus mode to continuous auto focus
          UITapGestureRecognizer *doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapToContinouslyAutoFocus:)];
          [doubleTap setDelegate:self];
          [doubleTap setNumberOfTapsRequired:2];
          [singleTap requireGestureRecognizerToFail:doubleTap];
          [scanModal.view addGestureRecognizer:doubleTap];
-         
          [doubleTap release];
          [singleTap release];
          */
@@ -269,9 +291,8 @@ BOOL gLogging = FALSE;
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == AVCamFocusModeObserverContext) {
-       
-		[focusModeLabel setText:[NSString stringWithFormat:@"focus: %@", [self stringForFocusMode:(AVCaptureFocusMode)[[change objectForKey:NSKeyValueChangeNewKey] integerValue]]]];
-	} else {
+        [focusModeLabel setText:[NSString stringWithFormat:@"focus: %@", [self stringForFocusMode:(AVCaptureFocusMode)[[change objectForKey:NSKeyValueChangeNewKey] integerValue]]]];
+    } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
@@ -282,7 +303,6 @@ BOOL gLogging = FALSE;
     [[self captureManager] toggleCamera];
     [[self captureManager] continuousFocusAtPoint:CGPointMake(.5f, .5f)];
 }
-
 - (IBAction)toggleRecording:(id)sender
 {
     [[self recordButton] setEnabled:NO];
@@ -291,21 +311,18 @@ BOOL gLogging = FALSE;
     else
         [[self captureManager] stopRecording];
 }
-
 -(void)getPhoto {
     self.imgPicker = [[UIImagePickerController alloc] init];
     self.imgPicker.allowsEditing = YES;
     self.imgPicker.delegate = self;
     
     self.imgPicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-    [scanModal presentModalViewController:self.imgPicker animated:YES];
-
+    [irisModal presentModalViewController:self.imgPicker animated:YES];
 }
-
 - (IBAction)captureStillImage:(id)sender
 {
     [[self captureManager] captureStillImage];
-
+    
     UIView *flashView = [[UIView alloc] initWithFrame:[[self videoPreviewView] frame]];
     [flashView setBackgroundColor:[UIColor whiteColor]];
     [[[self view] window] addSubview:flashView];
@@ -321,86 +338,205 @@ BOOL gLogging = FALSE;
      ];
 }
 - (void)scanButtonPressed {
-
-	[[self scanningLabel] setHidden:NO];
+    
+    [[self scanningLabel] setHidden:NO];
     [[self captureManager] captureStillImage];
 }
 - (void)btnClose{
     [[GlobalStn sharedSingleton] setPickerChk:2];
-    [scanModal dismissModalViewControllerAnimated: NO];
+    [irisModal dismissModalViewControllerAnimated: NO];
+    [irisModal release];
+    irisModal=nil;
     [scanModal release];
     scanModal=nil;
     [captureManager release];
     captureManager=nil;
-    
-    NSLog(@"c %d",[scanningLabel retainCount]);
-   
 }
 - (void)StillViewAdd
 {
-    NSLog(@"--s %d",[captureManager retainCount]);
-    [scanModal dismissModalViewControllerAnimated: NO];
+    [irisModal dismissModalViewControllerAnimated: NO];
     
     photoEditController *controller=[[photoEditController alloc] init];
-    [self.navigationController pushViewController:controller animated:YES];
-   
-    [controller setImageData:[[self captureManager] stillImage]];
-    [controller release];
     
+    CATransition *transition = [CATransition animation];
+    transition.duration = 0.7f;
+    transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+    transition.type = kCATransitionFade;
+    transition.subtype = kCATransitionFromLeft;
+    //transitioning = YES;
+    transition.delegate = self;
+
+    self.navigationController.navigationBarHidden = NO;
+    controller.hidesBottomBarWhenPushed=YES;
+    [self.navigationController pushViewController:controller animated:NO];
+    [self.navigationController.view.layer addAnimation:transition forKey:nil];
+
+    UIImage *img=[self generatePhotoThumbnail:[[self captureManager] stillImage] withRatio:300];
+    [self saveImage:img named:@"temp"];
+    
+    [controller release];
+    [irisModal release];
+    irisModal=nil;
     [scanModal release];
     scanModal=nil;
     [captureManager release];
     captureManager=nil;
-    
+  
 
-    NSLog(@"--e %d",[captureManager retainCount]);
     /*UIView *parent = scanModal.view;
-    [scanView.view removeFromSuperview];
-    [parent addSubview:scanView.view];
-
-    //QuarzCore
-    //애니매이션 객체 생성
-    CATransition * transit = [CATransition animation];
-    [transit setDelegate:self]; 
-    //애니매이션 시간 설정
-    [transit setDuration:1.0f];
-    //애니메이션 알고르짐 선택 
-    [transit setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
-    //[transit setTimingFunction:UIViewAnimationCurveEaseInOut];
-    //애니메이션 타입설정
-    //[transit setType:kCATransitionFade];
-    //[transit setType:kCATransitionPush];
-    //[transit setType:kCATransitionMoveIn];
-    //[transit setType:kCATransitionReveal];
-    
-    //[transit setSubtype:kCATransitionFromTop];
-    //[transit setSubtype:kCATransitionFromBottom];
-    //[transit setSubtype:kCATransitionFromLeft];
-    [transit setSubtype:kCATransitionFromRight];
-    
-    //문서에 나오지 않는 애니매이션
-    //[transit setType:@"pageCurl"];
-    //[transit setType:@"pageUnCurl"];
-    //[transit setType:@"suckEffect"];
-    //[transit setType:@"cameraIris"];
-    //[transit setType:@"cameraIrisHollowOpen"];
-    //[transit setType:@"cameraIrisHollowClose"];
-    [transit setType:@"rippleEffect"];
-    //[transit setType:@"oglFlip"];
-    
-    
-    //애니매이션 가동       
-    [[parent layer]addAnimation:transit forKey:@"animation_key"];
-       
-    //[scanModal dismissModalViewControllerAnimated: YES];
-    upload.hidden = NO;
-    //NSLog(@"modal dismiss");
-    [[self scanningLabel] setHidden:YES];
+     [scanView.view removeFromSuperview];
+     [parent addSubview:scanView.view];
+     
+     //QuarzCore
+     //애니매이션 객체 생성
+     CATransition * transit = [CATransition animation];
+     [transit setDelegate:self];
+     //애니매이션 시간 설정
+     [transit setDuration:1.0f];
+     //애니메이션 알고르짐 선택
+     [transit setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
+     //[transit setTimingFunction:UIViewAnimationCurveEaseInOut];
+     //애니메이션 타입설정
+     //[transit setType:kCATransitionFade];
+     //[transit setType:kCATransitionPush];
+     //[transit setType:kCATransitionMoveIn];
+     //[transit setType:kCATransitionReveal];
+     //[transit setSubtype:kCATransitionFromTop];
+     //[transit setSubtype:kCATransitionFromBottom];
+     //[transit setSubtype:kCATransitionFromLeft];
+     [transit setSubtype:kCATransitionFromRight];
+     //문서에 나오지 않는 애니매이션
+     //[transit setType:@"pageCurl"];
+     //[transit setType:@"pageUnCurl"];
+     //[transit setType:@"suckEffect"];
+     //[transit setType:@"cameraIris"];
+     //[transit setType:@"cameraIrisHollowOpen"];
+     //[transit setType:@"cameraIrisHollowClose"];
+     [transit setType:@"rippleEffect"];
+     //[transit setType:@"oglFlip"];
+     //애니매이션 가동
+     [[parent layer]addAnimation:transit forKey:@"animation_key"];
+     //[scanModal dismissModalViewControllerAnimated: YES];
+     upload.hidden = NO;
+     //NSLog(@"modal dismiss");
+     [[self scanningLabel] setHidden:YES];
      */
 }
-- (void)saveImageToPhotoAlbum 
+
+- (UIImage *)generatePhotoThumbnail:(UIImage *)image withRatio:(float)ratio {
+    
+    // 레티나 예외처리
+    if (UIGraphicsBeginImageContextWithOptions != NULL) {
+        UIGraphicsBeginImageContextWithOptions(CGSizeMake(ratio,ratio),NO,0.0);
+    } else {
+        UIGraphicsBeginImageContext(CGSizeMake(ratio,ratio));
+    }
+    
+    CGContextRef newContext = UIGraphicsGetCurrentContext();
+    
+    switch (image.imageOrientation)
+    {
+        case UIImageOrientationUp:
+            NSLog(@"Up");
+            
+            CGContextTranslateCTM(newContext, 0, 0);
+            CGContextRotateCTM(newContext,0*(M_PI/180));
+            break;
+        case UIImageOrientationRight:
+            NSLog(@"Right");
+            CGContextTranslateCTM(newContext, 300.0, 0);
+            CGContextRotateCTM(newContext,90*(M_PI/180));
+            break;
+        case UIImageOrientationLeft:
+            NSLog(@"Left");
+            CGContextTranslateCTM(newContext, 300, 0);
+            CGContextRotateCTM(newContext,-90*(M_PI/180));
+            break;
+        case UIImageOrientationDown:
+            NSLog(@"Down");
+            CGContextTranslateCTM(newContext, 300, 300);
+            CGContextRotateCTM(newContext,180*(M_PI/180));
+            break;
+        default:
+            NSLog(@"Default");
+            break;
+    }
+    
+    CGRect cropRect;
+    
+    CGFloat rat = 0;
+    CGSize size = [image size];
+    
+    int padding = 20;
+    int pictureSize = ratio;
+    int startCroppingPosition = 100;
+    
+    if (size.height > size.width) {
+        pictureSize = size.width - (2.0 * padding);
+        startCroppingPosition = (size.height - pictureSize) / 2.0; 
+    } else {
+        pictureSize = size.height - (2.0 * padding);
+        startCroppingPosition = (size.width - pictureSize) / 2.0;
+    }
+    
+    if( image.size.width > image.size.height ) {
+        
+        rat = ((ratio  * 2) / image.size.width) * 4;
+    } else {
+        
+        rat = ((ratio  * 2) / image.size.height) * 4;
+    }
+    
+    if (image.size.width == image.size.height) {
+        cropRect = CGRectMake(0.0, 0.0, rat*image.size.width, image.size.height);
+    } else if (image.size.width > image.size.height) {
+        cropRect = CGRectMake(0.0, 0.0, rat*image.size.height, image.size.height);
+    } else {
+        cropRect = CGRectMake(startCroppingPosition, padding, pictureSize, pictureSize);
+    }
+    
+    CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], cropRect);
+    
+    UIImage *cropped = [UIImage imageWithCGImage:imageRef  scale:1.0 orientation:image.imageOrientation];
+    CGImageRelease(imageRef);
+    
+    NSData *pngData = UIImagePNGRepresentation(cropped);
+    UIImage *ThumbNail    = [[UIImage alloc] initWithData:pngData];
+    
+    [ThumbNail drawInRect:CGRectMake(0.0, 0.0, ratio, ratio)];
+    
+    UIImage *newImage    = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    [ThumbNail release];
+    
+    return newImage;
+}
+
+- (void)saveImage:(UIImage*)image named:(NSString*)imageName {
+   
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES); 
+    NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
+    NSString *dirPath = [documentsDirectory stringByAppendingPathComponent:@"ImageCache"];
+    NSError *error;
+    
+    if (![[NSFileManager defaultManager] fileExistsAtPath:dirPath])
+        [[NSFileManager defaultManager] createDirectoryAtPath:dirPath withIntermediateDirectories:NO attributes:nil error:&error];
+    
+    
+    NSData *imageData = UIImagePNGRepresentation(image);
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+
+    NSString *fullPath = [dirPath stringByAppendingPathComponent:
+                          [NSString stringWithFormat:@"%@.png", imageName]];
+    
+    [fileManager createFileAtPath:fullPath contents:imageData attributes:nil];
+    NSLog(@"image saved %@",fullPath);
+}
+
+- (void)saveImageToPhotoAlbum
 {
-    UIImageWriteToSavedPhotosAlbum([[self captureManager] stillImage], self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
+    [self StillViewAdd];
+    //UIImageWriteToSavedPhotosAlbum([[self captureManager] stillImage], self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
 }
 - (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
 {
@@ -413,9 +549,9 @@ BOOL gLogging = FALSE;
         //
         //imageview.image=[[self captureManager] stillImage];
         //[self dismissModalViewControllerAnimated: YES];
-        [self StillViewAdd];
-   
-        [[self scanningLabel] setHidden:YES];
+        
+        
+        //[[self scanningLabel] setHidden:YES];
     }
 }
 
@@ -429,7 +565,7 @@ BOOL gLogging = FALSE;
     rect = CGRectMake(0.0, 0.0, 300.0, 300.0);
     //imageview.image=[self imageByCropping:img toRect:rect];
     //imageview.image=[self generatePhotoThumbnail:img withRatio:300];
-     
+    
 }
 
 
@@ -449,17 +585,17 @@ BOOL gLogging = FALSE;
 @implementation photoPickerViewController (InternalMethods)
 
 
-- (CGPoint)convertToPointOfInterestFromViewCoordinates:(CGPoint)viewCoordinates 
+- (CGPoint)convertToPointOfInterestFromViewCoordinates:(CGPoint)viewCoordinates
 {
     CGPoint pointOfInterest = CGPointMake(.5f, .5f);
     CGSize frameSize = [[self videoPreviewView] frame].size;
     
     if ([[[self captureManager] previewLayer] isMirrored]) {
         viewCoordinates.x = frameSize.width - viewCoordinates.x;
-    }    
+    }
     
     if ( [[[[self captureManager] previewLayer] videoGravity] isEqualToString:AVLayerVideoGravityResize] ) {
-		// Scale, switch x and y, and reverse x
+        // Scale, switch x and y, and reverse x
         pointOfInterest = CGPointMake(viewCoordinates.y / frameSize.height, 1.f - (viewCoordinates.x / frameSize.width));
     } else {
         CGRect cleanAperture;
@@ -480,9 +616,9 @@ BOOL gLogging = FALSE;
                         CGFloat x2 = frameSize.height * apertureRatio;
                         CGFloat x1 = frameSize.width;
                         CGFloat blackBar = (x1 - x2) / 2;
-						// If point is inside letterboxed area, do coordinate conversion; otherwise, don't change the default value returned (.5,.5)
+                        // If point is inside letterboxed area, do coordinate conversion; otherwise, don't change the default value returned (.5,.5)
                         if (point.x >= blackBar && point.x <= blackBar + x2) {
-							// Scale (accounting for the letterboxing on the left and right of the video preview), switch x and y, and reverse x
+                            // Scale (accounting for the letterboxing on the left and right of the video preview), switch x and y, and reverse x
                             xc = point.y / y2;
                             yc = 1.f - ((point.x - blackBar) / x2);
                         }
@@ -491,15 +627,15 @@ BOOL gLogging = FALSE;
                         CGFloat y1 = frameSize.height;
                         CGFloat x2 = frameSize.width;
                         CGFloat blackBar = (y1 - y2) / 2;
-						// If point is inside letterboxed area, do coordinate conversion. Otherwise, don't change the default value returned (.5,.5)
+                        // If point is inside letterboxed area, do coordinate conversion. Otherwise, don't change the default value returned (.5,.5)
                         if (point.y >= blackBar && point.y <= blackBar + y2) {
-							// Scale (accounting for the letterboxing on the top and bottom of the video preview), switch x and y, and reverse x
+                            // Scale (accounting for the letterboxing on the top and bottom of the video preview), switch x and y, and reverse x
                             xc = ((point.y - blackBar) / y2);
                             yc = 1.f - (point.x / x2);
                         }
                     }
                 } else if ([[[[self captureManager] previewLayer] videoGravity] isEqualToString:AVLayerVideoGravityResizeAspectFill]) {
-					// Scale, switch x and y, and reverse x
+                    // Scale, switch x and y, and reverse x
                     if (viewRatio > apertureRatio) {
                         CGFloat y2 = apertureSize.width * (frameSize.width / apertureSize.height);
                         xc = (point.y + ((y2 - frameSize.height) / 2.f)) / y2; // Account for cropped height
@@ -540,12 +676,12 @@ BOOL gLogging = FALSE;
 // Update button states based on the number of available cameras and mics
 - (void)updateButtonStates
 {
-	NSUInteger cameraCount = [[self captureManager] cameraCount];
-	NSUInteger micCount = [[self captureManager] micCount];
+    NSUInteger cameraCount = [[self captureManager] cameraCount];
+    NSUInteger micCount = [[self captureManager] micCount];
     
     CFRunLoopPerformBlock(CFRunLoopGetMain(), kCFRunLoopCommonModes, ^(void) {
         if (cameraCount < 2) {
-            [[self cameraToggleButton] setEnabled:NO]; 
+            [[self cameraToggleButton] setEnabled:NO];
             
             if (cameraCount < 1) {
                 //[[self stillButton] setEnabled:NO];
@@ -599,22 +735,21 @@ BOOL gLogging = FALSE;
     });
 }
 /*
-- (void)captureManagerStillImageCaptured:(AvCaptureManager *)captureManager
-{
-    CFRunLoopPerformBlock(CFRunLoopGetMain(), kCFRunLoopCommonModes, ^(void) {
-        [[self stillButton] setEnabled:YES];
-    });
-}
-*/
+ - (void)captureManagerStillImageCaptured:(AvCaptureManager *)captureManager
+ {
+ CFRunLoopPerformBlock(CFRunLoopGetMain(), kCFRunLoopCommonModes, ^(void) {
+ [[self stillButton] setEnabled:YES];
+ });
+ }
+ */
 - (void)captureManagerDeviceConfigurationChanged:(AvCaptureManager *)captureManager
 {
-	[self updateButtonStates];
+    [self updateButtonStates];
 }
 
 - (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
+    [super didReceiveMemoryWarning];
 }
 
 @end
-
 

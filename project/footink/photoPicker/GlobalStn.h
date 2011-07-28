@@ -20,6 +20,9 @@
     int moreRow; 
     int imgTag; 
     int pickerChk; 
+    int selectedFilterInt;
+ 
+    int camPosition;
 }
 +(GlobalStn *)sharedSingleton;
 @property (nonatomic, retain) NSString *uname;
@@ -32,7 +35,8 @@
 @property (nonatomic, assign) int moreRow;
 @property (nonatomic, assign) int imgTag;
 @property (nonatomic, assign) int pickerChk;
-
+@property (nonatomic, assign) int selectedFilterInt;
+@property (nonatomic, assign) int camPosition;
 -(NSArray *)getSetting;
 
 @end

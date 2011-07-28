@@ -12,21 +12,30 @@
 #import <CoreTelephony/CTCarrier.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import "Reachability.h"
+#import "splashViewController.h"
 
-@interface footinkAppDelegate (PrivateMethods)
-- (CGFloat) horizontalLocationFor:(NSUInteger)tabIndex;
-- (void) addTabBarArrow;
-@end
 
 @implementation footinkAppDelegate
+
 @synthesize tabController;
-@synthesize tabBarArrow;
+
 @synthesize window,textView;
 @synthesize _fsession;
 @synthesize FBviewController;
 
+
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
     // Add registration for remote notifications
+    
+    splashViewController *splash=[[splashViewController alloc] init];
+    
+    [window addSubview:splash.view];
+    [splash showSplash];
+    [splash release];
+    
+ 
+
+    
 	[[UIApplication sharedApplication] 
      registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
 	
@@ -34,93 +43,22 @@
 	application.applicationIconBadgeNumber = 0;
     
     tabController = [[UITabBarController alloc]init];
+    tabController.delegate = self;
+    [window addSubview:tabController.view];
+    [self.window makeKeyAndVisible];
+    
+
+    
     tabController.viewControllers = [NSArray arrayWithObjects:
                                      [[[UINavigationController alloc] initWithRootViewController:[[PhotoRoot new] autorelease]] autorelease],
-                                     [[[UINavigationController alloc] initWithRootViewController:[[[withRootView alloc]init] autorelease]] autorelease],
+                                     [[[UINavigationController alloc] initWithRootViewController:[[[WithRootViewController alloc]init] autorelease]] autorelease],
                                      [[[UINavigationController alloc] initWithRootViewController:[[[photoPickerViewController alloc]init] autorelease]] autorelease],
                                      [[[UINavigationController alloc] initWithRootViewController:[[[SpotListViewController alloc]init] autorelease]] autorelease],
                                      [[[UINavigationController alloc] initWithRootViewController:[[[SettingView alloc] init] autorelease]] autorelease],
+                                     [[[UINavigationController alloc] initWithRootViewController:[[[LoginView alloc] init] autorelease]] autorelease],
                                      nil];
+    tabController.customizableViewControllers=nil;
     
-    tabController.delegate = self;
-    //[item1 performSelectorOnMainThread:@selector(Yourfunction) withObject:nil waitUntilDone:NO];
-    
-    [window addSubview:tabController.view];
-    //[self addTabBarArrow];
-    [self.window makeKeyAndVisible];
-    
-    
-    /*NSError *error;
-     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES); //1
-     NSString *documentsDirectory = [paths objectAtIndex:0]; //2
-     NSString *path = [documentsDirectory stringByAppendingPathComponent:@"data.plist"]; //3
-     
-     NSFileManager *fileManager = [NSFileManager defaultManager];
-     
-     if (![fileManager fileExistsAtPath: path]) //4
-     {
-     NSString *bundle = [[NSBundle mainBundle] pathForResource:@"data" ofType:@"plist"]; //5
-     
-     [fileManager copyItemAtPath:bundle toPath: path error:&error]; //6
-     }
-     
-     //æ≤±‚
-     NSMutableDictionary *myDic = [[[NSMutableDictionary alloc]init]  autorelease];
-     [myDic setObject:@"father, mother, son" forKey:@"familyRole"];
-     [myDic setObject:@"stday, wiseleeg, YOUNGYOUNG" forKey:@"names"];
-     [myDic writeToFile:path atomically:YES];
-     
-     NSMutableDictionary *saveData = [[[NSMutableDictionary alloc]init]  autorelease];
-     saveData = [NSMutableDictionary dictionaryWithCapacity: 3];
-     [saveData setObject: @"d1" forKey:@"dataOne"];
-     [saveData setObject: @"d2" forKey:@"dataTwo"];
-     [saveData setObject: @"d3" forKey:@"dataThree"];
-     
-     [saveData writeToFile:path atomically:YES];
-     
-     
-     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-     
-     NSMutableArray *arrayIWillWrite = [NSMutableArray array];
-     NSMutableDictionary *dictionary;
-     
-     dictionary = [NSMutableDictionary dictionary];
-     [dictionary setObject:[NSNumber numberWithInt:0] forKey:@"favourites"];
-     [dictionary setObject:[NSNumber numberWithInt:0] forKey:@"id"];
-     [dictionary setObject:@"This is my first record" forKey:@"story"];
-     [dictionary setObject:[NSNumber numberWithInt:324567] forKey:@"timestamp"];
-     [arrayIWillWrite addObject:dictionary];
-     
-     dictionary = [NSMutableDictionary dictionary];
-     [dictionary setObject:[NSNumber numberWithInt:0] forKey:@"favourites"];
-     [dictionary setObject:[NSNumber numberWithInt:1] forKey:@"id"];
-     [dictionary setObject:@"This is my second record" forKey:@"story"];
-     [dictionary setObject:[NSNumber numberWithInt:321456] forKey:@"timestamp"];
-     [arrayIWillWrite addObject:dictionary];
-     
-     [arrayIWillWrite writeToFile:path atomically:NO];
-     
-     NSArray *arrayThatWasRead = [NSArray arrayWithContentsOfFile:path];
-     NSLog(@"%@", arrayThatWasRead);
-     
-     NSDictionary *dictionaryFromArrayThatWasRead = [arrayThatWasRead objectAtIndex:0];
-     NSLog(@"%@", dictionaryFromArrayThatWasRead);
-     
-     [pool release];
-     
-     
-     
-     
-     
-     //¿–±‚
-     NSMutableDictionary *savedStock = [[NSMutableDictionary alloc] initWithContentsOfFile: path];
-     //load from savedStock example int value
-     
-     int value2;
-     value2 = [[savedStock objectForKey:@"item2"] intValue];
-     NSLog(@"plist %d",value2);
-     [savedStock release];
-     */
     
     [self initAuth];
     NSArray *ct=[self ChkAuth];
@@ -128,16 +66,45 @@
     ck=ct.count;
     //NSLog(@"ct %d",ck);
     if(ck==0){
-        LoginView *login = [[LoginView alloc] init];
-        [tabController presentModalViewController:login animated:NO];
-        [login release];
+      
+        self.tabController.selectedIndex = 5;
+     
+        
     }
     
+    //[item1 performSelectorOnMainThread:@selector(Yourfunction) withObject:nil waitUntilDone:NO];
+    
+    
+ 
     [self carrierTelCountryCode];
 }
 
-//æÓ«√∏Æƒ…¿Ãº«¿Ã Ω««‡µ«æÓ¿÷¡ˆ æ ¿∫ ∞ÊøÏ «™Ω√∏¶ πﬁæ∆º≠ æÓ«√∏Æƒ…¿Ãº«¿Ã Ω««‡µ…∂ß ∞¸∑√ ¡§∫∏∞° launchOptionsø° ¥„∞‹ø¿∞‘ µ«∏Á ±◊ ¡§∫∏∏¶ ∞°¡ˆ∞Ì didFinishLaunchingWithOptions∏¶ ¿Á»£√‚«œ¥¬ ∑Œ¡˜. 
-//±◊ µ⁄ø° ∫∏∏È ≥™øÕ¿÷¥¬ APNSµÓ∑œ ∫Œ∫–¿Ã ªÁøÎ¿⁄ø°∞‘ «™Ω√∏¶ «„øÎ«“¡ˆ π∞æÓ∫∏¥¬ ∫Œ∫–.
+- (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
+   
+   NSLog(@"---555555");
+   // if(![self hasValidLogin] && (viewController != [tabController.viewControllers objectAtIndex:0]))
+   // {
+   //     NSLog(@"---/////-%@",[self hasValidLogin]);
+   //     return NO;
+   // }
+   // return YES;
+}
+- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
+    
+    NSLog(@"tab select %d",tabBarController.selectedIndex);
+    NSInteger tabIndex=tabBarController.selectedIndex;
+    
+    switch (tabIndex) {
+        case 0:
+            
+            break;
+        case 1:
+            
+            break;    
+        default:
+            break;
+    }
+}
 
 /* 
  * --------------------------------------------------------------------------------------------------------------
@@ -145,33 +112,25 @@
  * --------------------------------------------------------------------------------------------------------------
  */
 
-/**
- * Fetch and Format Device Token and Register Important Information to Remote Server
- */
-//APNSø° µπŸ¿ÃΩ∫ ¡§∫∏∏¶ µÓ∑œ«œ∞Ì 64πŸ¿Ã∆Æ¿« πÆ¿⁄ø≠¿ª πﬁæ∆ø¬¥Ÿ.
+
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)devToken {
 	
 #if !TARGET_IPHONE_SIMULATOR
-    //NSLog(@"token %@",devToken);
+
     
     [[GlobalStn sharedSingleton] setPushToken:devToken];
-    
-	// Get Bundle Info for Remote Registration (handy if you have more than one app)
+
 	NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
 	NSString *appVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
-	
-	// Check what Notifications the user has turned on.  We registered for all three, but they may have manually disabled some or all of them.
+
 	NSUInteger rntypes = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
 	
-	// Set the defaults to disabled unless we find otherwise...
+
 	NSString *pushBadge = @"disabled";
 	NSString *pushAlert = @"disabled";
 	NSString *pushSound = @"disabled";
 	
-	// Check what Registered Types are turned on. This is a bit tricky since if two are enabled, and one is off, it will return a number 2... not telling you which
-	// one is actually disabled. So we are literally checking to see if rnTypes matches what is turned on, instead of by number. The "tricky" part is that the 
-	// single notification types will only match if they are the ONLY one enabled.  Likewise, when we are checking for a pair of notifications, it will only be 
-	// true if those two notifications are on.  This is why the code is written this way ;)
+
 	if(rntypes == UIRemoteNotificationTypeBadge){
 		pushBadge = @"enabled";
 	}
@@ -198,33 +157,25 @@
 		pushAlert = @"enabled";
 		pushSound = @"enabled";
 	}
-	
-	// Get the users Device Model, Display Name, Unique ID, Token & Version Number
+
 	UIDevice *dev = [UIDevice currentDevice];
 	NSString *deviceUuid = dev.uniqueIdentifier;
     NSString *deviceName = dev.name;
 	NSString *deviceModel = dev.model;
 	NSString *deviceSystemVersion = dev.systemVersion;
 	
-	// Prepare the Device Token for Registration (remove spaces and < >)
+
 	NSString *deviceToken = [[[[devToken description] 
                                stringByReplacingOccurrencesOfString:@"<"withString:@""] 
                               stringByReplacingOccurrencesOfString:@">" withString:@""] 
                              stringByReplacingOccurrencesOfString: @" " withString: @""];
 	
-	// Build URL String for Registration
-	// !!! CHANGE "www.mywebsite.com" TO YOUR WEBSITE. Leave out the http://
-	// !!! SAMPLE: "secure.awesomeapp.com"
+
 	NSString *host = @"lpmagazine.co.kr";
-	
-	// !!! CHANGE "/apns.php?" TO THE PATH TO WHERE apns.php IS INSTALLED 
-	// !!! ( MUST START WITH / AND END WITH ? ). 
-	// !!! SAMPLE: "/path/to/apns.php?"
+
 	NSString *urlString = [NSString stringWithFormat:@"/apns/apns.php?task=%@&appname=%@&appversion=%@&deviceuid=%@&devicetoken=%@&devicename=%@&devicemodel=%@&deviceversion=%@&pushbadge=%@&pushalert=%@&pushsound=%@", @"register", appName,appVersion, deviceUuid, deviceToken, deviceName, deviceModel, deviceSystemVersion, pushBadge, pushAlert, pushSound];
 	
-	// Register the Device Data
-	// !!! CHANGE "http" TO "https" IF YOU ARE USING HTTPS PROTOCOL
-    //NSLog(@"%@",urlString);
+	
 	NSURL *url = [[NSURL alloc] initWithScheme:@"http" host:host path:urlString];
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url];
 	NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
@@ -350,40 +301,9 @@
     //NSLog(@"%@",Result);
     return Result;
 }
-//tabbar animation
-- (void) addTabBarArrow
-{
-    UIImage* tabBarArrowImage = [UIImage imageNamed:@"TabBarNipple.png"];
-    self.tabBarArrow = [[[UIImageView alloc] initWithImage:tabBarArrowImage] autorelease];
-    // To get the vertical location we start at the bottom of the window, go up by height of the tab bar, go up again by the height of arrow and then come back down 2 pixels so the arrow is slightly on top of the tab bar.
-    CGFloat verticalLocation = self.window.frame.size.height - tabController.tabBar.frame.size.height - tabBarArrowImage.size.height + 2;
-    tabBarArrow.frame = CGRectMake([self horizontalLocationFor:0], verticalLocation, tabBarArrowImage.size.width, tabBarArrowImage.size.height);
-    
-    [self.window addSubview:tabBarArrow];
-}
 
-- (CGFloat) horizontalLocationFor:(NSUInteger)tabIndex
-{
-    // A single tab item's width is the entire width of the tab bar divided by number of items
-    CGFloat tabItemWidth = tabController.tabBar.frame.size.width / tabController.tabBar.items.count;
-    // A half width is tabItemWidth divided by 2 minus half the width of the arrow
-    CGFloat halfTabItemWidth = (tabItemWidth / 2.0) - (tabBarArrow.frame.size.width / 2.0);
-    
-    // The horizontal location is the index times the width plus a half width
-    return (tabIndex * tabItemWidth) + halfTabItemWidth;
-}
 
-- (void)tabBarController:(UITabBarController *)theTabBarController didSelectViewController:(UIViewController *)viewController
-{
-    
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:0.2];
-    CGRect frame = tabBarArrow.frame;
-    frame.origin.x = [self horizontalLocationFor:tabController.selectedIndex];
-    tabBarArrow.frame = frame;
-    [UIView commitAnimations];  
-    
-}
+
 
 -(void)carrierTelCountryCode{
     CTTelephonyNetworkInfo *networkInfo = [[[CTTelephonyNetworkInfo alloc] init] autorelease];

@@ -13,9 +13,15 @@
 @private
 	EGOImageView* imageView;
     UIView *rightView;
-   EGOImageView*profileView;
+    UIView *infDisplay;
+    EGOImageView*profileView;
+    UILabel *lovedlabel;
+    UILabel *comlabel;
 }
 @property (nonatomic,retain) UIView *rightView;
+@property (nonatomic,retain) UIView *infDisplay;
+@property (nonatomic,retain) UILabel *lovedlabel;
+@property (nonatomic,retain) UILabel *comlabel;
 
 - (void)setPhoto:(NSString*)Photo profile:(NSString*)icon;
 @end

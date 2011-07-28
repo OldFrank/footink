@@ -21,7 +21,7 @@
 
     NSMutableArray *jsonArray;
 
-    UIView *header;
+
     EGOImageView *profileView;
     int selectedSegment;
     
@@ -43,9 +43,10 @@
 @property (nonatomic, retain) UIScrollView *bodyScrollView;
 @property (nonatomic, retain) UIPageControl *pageControl;
 
+
 -(void)jsonLoad:(NSString *)types;
 -(void)jsonDummy;
--(void)layoutScrollImages;
+
 -(void)initImageView;
 -(void)loadScrollViewWithPage:(int)page;
 -(IBAction)changePage:(id)sender;

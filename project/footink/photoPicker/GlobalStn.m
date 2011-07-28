@@ -12,7 +12,7 @@
 @implementation GlobalStn
 
 static GlobalStn * _globalStn = nil;
-@synthesize uname,ukey,uprofile,celltot,sArray,pushToken,moreRow,imgTag,pickerChk;
+@synthesize uname,ukey,uprofile,celltot,sArray,pushToken,moreRow,imgTag,pickerChk,selectedFilterInt,camPosition;
 
 - (id) init {
     NSLog(@"Global init");
@@ -24,7 +24,7 @@ static GlobalStn * _globalStn = nil;
             self.uname = [[self.sArray objectAtIndex:0] objectForKey:@"name"];
             self.ukey = [[self.sArray objectAtIndex:0] objectForKey:@"privatekey"];
             self.uprofile = [[self.sArray objectAtIndex:0] objectForKey:@"profile"];
-            NSLog(@"%@",self.uprofile);
+            //NSLog(@"%@",self.uprofile);
         }
         
         self.celltot = 0;
@@ -32,6 +32,8 @@ static GlobalStn * _globalStn = nil;
         self.moreRow=0;
         self.imgTag=0;
         self.pickerChk=0;
+        self.selectedFilterInt=0;
+        self.camPosition=0;
        
         //self.btnArray = nil;
     }
