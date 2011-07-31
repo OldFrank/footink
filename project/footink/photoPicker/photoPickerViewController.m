@@ -78,7 +78,7 @@ BOOL gLogging = FALSE;
 -(void)viewDidLoad{
     [super viewDidLoad];
     [[UIApplication sharedApplication] setStatusBarHidden:YES];
-    [self AVModal];
+    
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -88,6 +88,7 @@ BOOL gLogging = FALSE;
         [[UIApplication sharedApplication] setStatusBarHidden:YES];
         [[GlobalStn sharedSingleton] setPickerChk:0];
     }else if((int)[[GlobalStn sharedSingleton] pickerChk]==4){ // with 카메라 촬영 이후 진입
+        
         [[GlobalStn sharedSingleton] setPickerChk:1];
         //[[UIApplication sharedApplication] setStatusBarHidden:NO];
         
@@ -109,6 +110,7 @@ BOOL gLogging = FALSE;
         [[UIApplication sharedApplication] setStatusBarHidden:NO];
         self.tabBarController.selectedIndex = 0;
     }
+    
 }
 - (void) viewWillDisappear:(BOOL)animated {
     //if((int)[[GlobalStn sharedSingleton] pickerChk]!=0){

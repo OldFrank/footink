@@ -56,7 +56,7 @@
 
 - (CGFloat)calcDistance:(CLLocation *)userLocation placeLocation:(CLLocation *)location;
 
-- (void)jsonLoad:(NSString *)types;
+- (BOOL)jsonLoad:(NSString *)types;
 - (void)selTimer:(NSString *)type;
 - (void)showAlert:(NSString *)msg;
 - (int)checkNetwork;
@@ -64,7 +64,7 @@
 - (void)reloadTableViewDataSource;
 
 - (void)loadingIndicator;
-
+-(void)stopIndicator;
 
 @end
 

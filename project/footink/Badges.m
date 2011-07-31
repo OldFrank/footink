@@ -97,11 +97,6 @@
 {
 	return [[[self alloc] initWithString:badgeString withStringColor:stringColor withInsetColor:insetColor withBadgeFrame:badgeFrameYesNo withBadgeFrameColor:frameColor withScale:scale withShining:shining] autorelease];
 }
-
-
-
-
-
 // Draws the Badge with Quartz
 -(void) drawRoundedRectWithContext:(CGContextRef)context withRect:(CGRect)rect
 {

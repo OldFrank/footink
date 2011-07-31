@@ -9,9 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface WithRootViewController : UIViewController<UINavigationControllerDelegate>{
-    UIView *newTabBar;
-    UIButton *cameraButton;
+
 }
-@property (nonatomic, retain) UIView *newTabBar;
-@property (nonatomic, retain) UIButton *cameraButton;
+
 @end

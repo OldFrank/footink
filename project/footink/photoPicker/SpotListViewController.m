@@ -5,7 +5,6 @@
 //  Created by yongsik on 11. 6. 27..
 //  Copyright 2011 ag. All rights reserved.
 //
-
 #import "SpotListViewController.h"
 #import "SearchListCellView.h"
 #import "Branche.h"
@@ -20,8 +19,6 @@
 #import "SpotSubmitView.h"
 
 #define _GOOGLE_PLACE_KEY @"AIzaSyBvuPWVSDqJv5e3fd37mw2-diiWBAv00v4"
-
-
 
 @implementation SpotListViewController
 const CGFloat pLaceRadius= 1000;
@@ -42,10 +39,8 @@ const CGFloat pLaceRadius= 1000;
 	return YES;
 }
 
-
 #pragma mark -
 #pragma mark Initialization
-
 - (id) init{
     self=[super init];
     if(self!=nil){
@@ -55,7 +50,6 @@ const CGFloat pLaceRadius= 1000;
     }
     return self;
 }
-
 #pragma mark -
 #pragma mark View lifecycle
 
@@ -182,18 +176,28 @@ const CGFloat pLaceRadius= 1000;
     }
     return status;
 }
-- (void)loadingAlert{
-    UIActivityIndicatorView *progressView = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(50.0, 90, 30, 30)];
-    progressView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
-    progressView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin |
-                                     UIViewAutoresizingFlexibleRightMargin |
-                                     UIViewAutoresizingFlexibleTopMargin |
-                                     UIViewAutoresizingFlexibleBottomMargin);
+-(void)networkError{
+    [self stopIndicator];
+    UIView *errorMsg=[[UIView alloc] initWithFrame:CGRectMake(50.0, 50.0, 220.0, 80.0)];
+    errorMsg.backgroundColor=[UIColor whiteColor];
+    errorMsg.tag=400;
     
-    [self showAlert:@"Loading"];                 
-    [alert addSubview:progressView];
-    [progressView startAnimating];
+    UILabel *msgLabel=[[UILabel alloc] initWithFrame:CGRectMake(10, 10, 190, 30.0)];
+    msgLabel.text=@"인터넷이 연결되지 않았습니다.";
+    msgLabel.textAlignment=UITextAlignmentCenter;
+    msgLabel.textColor=[UIColor grayColor];
+    msgLabel.font=[UIFont fontWithName:@"appleGothic" size:11.0f];
+    msgLabel.backgroundColor=[UIColor clearColor];
+    [errorMsg addSubview:msgLabel];
     
+    UIButton *retryBtn=[[UIButton alloc] initWithFrame:CGRectMake(30.0,30.0,100.0,30.0)];
+    [retryBtn addTarget:nil action:@selector(jsonLoad:) forControlEvents:UIControlEventTouchUpInside];
+    [retryBtn setTitle:@"재시도" forState:UIControlStateNormal]; 
+    [retryBtn setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+    [errorMsg addSubview:retryBtn];
+    [self.spotTable addSubview:errorMsg];
+    [errorMsg release];
+    [retryBtn release];
 }
 - (void)loadingIndicator{
     UIActivityIndicatorView *indicatorView = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(35.0, 35.0, 30.0, 30.0)];
@@ -219,8 +223,10 @@ const CGFloat pLaceRadius= 1000;
     [UIView setAnimationDidStopSelector:@selector(animation:finished:context:)];
     [loadingBack setCenter:CGPointMake(160,160)];
     [UIView commitAnimations];
-    
-    
+}
+-(void)stopIndicator{
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+    [[self.spotTable viewWithTag:300] removeFromSuperview];
 }
 -(void)ToggleIndicator{
     UIActivityIndicatorView *activityIndicator = (UIActivityIndicatorView *)[self.view viewWithTag:100];
@@ -253,14 +259,17 @@ const CGFloat pLaceRadius= 1000;
     [self.spotTable reloadData];
 }
 
-- (void)jsonLoad:(NSString *)types{
+- (BOOL)jsonLoad:(NSString *)types{
     NSLog(@"start parsing %@",types);
     
     if([self checkNetwork]==0){ 
-        [self hideAlert];
-        [self showAlert:@"네트워크오류."];
+        [self networkError];
+        return FALSE;
     }else{
-        
+        [[self.spotTable viewWithTag:400] removeFromSuperview];
+    }
+        if(types==nil)
+            types=@"food";
         
         self.locationManager = [[CLLocationManager alloc] init];
         [self.locationManager startUpdatingLocation];
@@ -315,9 +324,9 @@ const CGFloat pLaceRadius= 1000;
         }else{
             NSLog(@"http error %d",statusCode);
             
-            [self showAlert:@"http service down."];
+            
         }
-    }
+    return TRUE;
 }
 - (void)selTimer:(NSString *)type{
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
@@ -486,9 +495,6 @@ const CGFloat pLaceRadius= 1000;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
-    
-    
     if ((pageNumber * kPageUnit) < self.jsonArray.count)
         
     {
@@ -640,9 +646,6 @@ const CGFloat pLaceRadius= 1000;
     
     return label;
 }
-
-
-
 - (void)touchDownAtTabIndex:(NSUInteger)tabIndex
 {
     NSLog(@"%d",tabIndex);

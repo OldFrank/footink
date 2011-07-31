@@ -33,18 +33,9 @@ const float PSectionHeaderHeight=30;
     [self getSpotList];
 }
 -(void)getSpotList{
- 
-    CLLocationManager *cmanager=[[CLLocationManager alloc] init];
-    [cmanager setDesiredAccuracy:kCLLocationAccuracyBest];
-    [cmanager setDelegate:self];
-    
-    CLLocation *loc=[cmanager location];
-    //CLLocationCoordinate2D coordinate=[loc coordinate];
-    [cmanager release];
-    
     CGRect progressframe=CGRectMake(10.0, 5.0, 200.0, 20.0);
     NSString *geturl=[NSString stringWithFormat:@"%@",PHOTO_SPOT_GET_URL];
-    progressbar=[[HttpWrapper alloc] requestUrl:geturl values:nil progressBarFrame:(CGRect)progressframe image:nil loc:loc delegate:self];
+    progressbar=[[HttpWrapper alloc] requestUrl:geturl values:nil progressBarFrame:(CGRect)progressframe image:nil loc:nil delegate:self];
     NSLog(@"---%@",geturl);
     [self.progressBack addSubview:progressbar];
 }

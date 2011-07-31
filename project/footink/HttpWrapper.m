@@ -41,22 +41,19 @@
         
         //post append
         
-        //if(coord==YES){
-            /*CLLocationManager * locationManager = [[CLLocationManager alloc] init];
+       if(coord==nil){
+            CLLocationManager * locationManager = [[CLLocationManager alloc] init];
             [locationManager setDesiredAccuracy:kCLLocationAccuracyBest];
             [locationManager setDelegate:self];
             CLLocation* location = [locationManager location];
             CLLocationCoordinate2D coordinate = [location coordinate];
-            
-            [locationManager release];*/
-            
-            [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"lat\"\r\n\r\n%f",coord.coordinate.latitude] dataUsingEncoding:NSUTF8StringEncoding] ];
-            [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding] ];
-        
-   
-            [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"lng\"\r\n\r\n%f",coord.coordinate.longitude] dataUsingEncoding:NSUTF8StringEncoding] ];
-        [body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-        
+           NSLog(@"--wrapper-- %f",coordinate.latitude);
+           [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"lat\"\r\n\r\n%f",coordinate.latitude] dataUsingEncoding:NSUTF8StringEncoding] ];
+           [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding] ];
+           [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"lng\"\r\n\r\n%f",coordinate.longitude] dataUsingEncoding:NSUTF8StringEncoding] ];
+           [body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+           [locationManager release];
+       }
         if([wrapData count]>0 && wrapData!=nil){
             int row=0;
             NSString *key,*val;

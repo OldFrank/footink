@@ -1,4 +1,3 @@
-
 //
 //  friendsViewcontroller.m
 //  photoPicker
@@ -7,45 +6,34 @@
 //  Copyright 2011 ag. All rights reserved.
 //
 
-#import "withViewcontroller.h"
+#import "withGroupController.h"
 #import "JSON.h"
 #import "GlobalStn.h"
 #import "Reachability.h"
-#import "EGOImageView.h"
 #import "pagingViewController.h"
+#import "withRootView.h"
 
-@implementation withViewcontroller
+#define NEARBY_GROUP_URL @"http://footink.com/user/nearby/group"
+
+@implementation withGroupController
 
 const CGFloat pLaceFriendsRadius= 20;
 const CGFloat bigImgScrollObjHeight	= 300.0;
 const CGFloat bigImgkScrollObjWidth	= 300.0;
 const NSUInteger kFNumImages		= 1;
 
-@synthesize jsonArray;
+@synthesize jsonArray,uidx;
 @synthesize scrollView,fscrollView,pageControl,viewControllers,bodyScrollView;
 
 - (id) init{
     self=[super init];
     if(self!=nil){
         self.title=@"With";
-    
     }
     return self;
 }
 - (void)viewDidLoad {
 	[super viewDidLoad];
-    
-    bodyScrollView=[[UIScrollView alloc] initWithFrame:CGRectMake(0.0,20.0,[UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width)];
-    [bodyScrollView setBackgroundColor:[UIColor whiteColor]];
-    [bodyScrollView setCanCancelContentTouches:NO];
-    
-    bodyScrollView.showsVerticalScrollIndicator=NO;
-    bodyScrollView.showsHorizontalScrollIndicator=YES;
-    bodyScrollView.alwaysBounceVertical=NO;             
-    bodyScrollView.alwaysBounceHorizontal=NO;         
-    bodyScrollView.pagingEnabled=NO;          //페이징 가능 여부 YES
-
-    [self.view addSubview:bodyScrollView];
     
     scrollView=[[UIScrollView alloc] initWithFrame:CGRectMake(10.0, 0.0, [UIScreen mainScreen].bounds.size.width - 20.0, [UIScreen mainScreen].bounds.size.width - 20.0)];
     [scrollView setBackgroundColor:[UIColor lightGrayColor]];
@@ -55,111 +43,129 @@ const NSUInteger kFNumImages		= 1;
     scrollView.showsHorizontalScrollIndicator=NO;
     scrollView.alwaysBounceVertical=NO;             
     scrollView.alwaysBounceHorizontal=NO;         
-    scrollView.pagingEnabled=YES;          //페이징 가능 여부 YES
+    scrollView.pagingEnabled=YES;
     scrollView.delegate=self;
     
-    [bodyScrollView addSubview:scrollView];
+    [self.view addSubview:scrollView];
     
-    [bodyScrollView setContentOffset:CGPointMake(0, 30) animated:YES];
-    
-    fscrollView=[[UIScrollView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width, 100.0)];
+    /*fscrollView=[[UIScrollView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width, 100.0)];
     fscrollView.backgroundColor=[UIColor grayColor];
-    [self.view addSubview:fscrollView];
+    [self.view addSubview:fscrollView];*/
     
-    [self jsonDummy];
+    
 }
 -(void)viewWillAppear:(BOOL)animated{
+    NSLog(@"group viewWillAppear");
+    if((int)[[GlobalStn sharedSingleton] pickerChk]==1){
+        [[GlobalStn sharedSingleton] setPickerChk:0];
+    }
     self.tabBarController.tabBar.hidden = YES; 
+    
+    
+    [self withGroupTabBar];
+    [self jsonLoad];
 }
--(void)jsonDummy
-{
-        NSString *url;
-        
-        url=@"http://footink.com/user/t";
-        
-        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] 
-                                                               cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                                           timeoutInterval:30.0];
-        [request setHTTPMethod:@"POST"];
-        
-        NSString *boundary = [NSString stringWithString:@"-----------14737809831466499882746641449"];
-        NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
-        [request addValue:contentType forHTTPHeaderField:@"Content-Type"];
-        
-        NSMutableData *body = [NSMutableData data];
-        [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-        //post append
-        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"privatekey\"\r\n\r\n%@",[[GlobalStn sharedSingleton] ukey]] dataUsingEncoding:NSUTF8StringEncoding] ];
-        
-        NSURLResponse *response;
-        NSHTTPURLResponse *httpResponse;
-        NSError *error;
-        NSLog(@"%@",[[GlobalStn sharedSingleton] ukey]);
-        id stringReply;
-        
-        NSData *datareply=[NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-        stringReply = (NSString *)[[NSString alloc] initWithData:datareply encoding:NSUTF8StringEncoding];
-        
-        httpResponse = (NSHTTPURLResponse *)response;
-        int statusCode = [httpResponse statusCode];  
-        //NSLog(@"HTTP Response Headers %@", [httpResponse allHeaderFields]); 
-        NSLog(@"HTTP Status code: %d", statusCode);
-        
-        if(statusCode==200) {
-            self.jsonArray=[stringReply JSONValue];
-            NSLog(@"%d",[self.jsonArray count]);
-            [self initImageView];
-
-            if(self.jsonArray==nil)
-                NSLog(@"parsing error");
-
-        }else{
-            NSLog(@"http 오류.");
+-(void)viewWillDisappear:(BOOL)animated{
+    [self hideTabBar];
+}
+-(void)hidePrevTabBar{
+    //[[self.tabBarController.view viewWithTag:3000] removeFromSuperview];
+    for(UIView *subview in [self.tabBarController.view subviews]){
+        if(subview.tag==3000){
+            [subview removeFromSuperview];
         }
+    }
 }
-- (void)jsonLoad:(NSString *)types{
-    CLLocationManager * locationManager = [[CLLocationManager alloc] init];
-    [locationManager startUpdatingLocation];
-    [locationManager setDesiredAccuracy:kCLLocationAccuracyBest];
-    [locationManager setDelegate:self];
-    CLLocation* location = [locationManager location];
-    CLLocationCoordinate2D coordinate = [location coordinate];
-    
-    [locationManager release];
-    NSURL *jsonURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://footink.com/user/friendsloc?lat=%f&lng=%f&radius=%f",coordinate.latitude,coordinate.longitude,pLaceFriendsRadius, nil]];
-	NSString *jsonData = [[NSString alloc] initWithContentsOfURL:jsonURL];
-    
-    self.jsonArray=[jsonData JSONValue];
-    [jsonData release];
-    
-    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"distance" ascending:YES];
-    [self.jsonArray sortUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
-    [sortDescriptor release];
-    
-    NSLog(@"data total %d",[self.jsonArray count]);
-    //NSLog(@"data %@",self.jsonArray);
-    
+-(void)hideTabBar{
+    //[[self.tabBarController.view viewWithTag:3000] removeFromSuperview];
+    for(UIView *subview in [self.tabBarController.view subviews]){
+        if(subview.tag==4000){
+            [subview removeFromSuperview];
+        }
+    }
 }
+-(void)withGroupTabBar{
+    [self hidePrevTabBar];
+    UIView *newTabBar=[[UIView alloc] initWithFrame:CGRectMake(0.0, 430.0, 320.0, 50.0)];
+    newTabBar.backgroundColor=[UIColor whiteColor];
+    newTabBar.tag=4000;
+    [self.tabBarController.view addSubview:newTabBar]; 
+    
+    UIButton *cameraButton=[[UIButton alloc] initWithFrame:CGRectMake(140.0, 0.0, 40.0, 40.0)];
+    UIImage *img = [UIImage imageNamed:@"btn_swipe.png"];
+    [cameraButton setImage:img forState:UIControlStateNormal];
+    [cameraButton addTarget:self action:@selector(onCamera) forControlEvents:UIControlEventTouchUpInside];
+    [img release];
+    [newTabBar addSubview:cameraButton];
+    [newTabBar release];
+    [cameraButton release];
+    
+     UIButton *backButton=[[UIButton alloc] initWithFrame:CGRectMake(10.0, 10.0, 40.0, 30.0)];
+     UIImage *simg = [UIImage imageNamed:@"btn_back.png"];
+     [backButton setImage:simg forState:UIControlStateNormal];
+     [backButton addTarget:self action:@selector(backPopAct) forControlEvents:UIControlEventTouchUpInside];
+     [simg release];
+     [newTabBar addSubview:backButton];
+     
+}
+-(void)onCamera{
+    NSLog(@"camera");
+    [self hideTabBar];
+    [[GlobalStn sharedSingleton] setCamPosition:1];
+    self.tabBarController.selectedIndex = 2;
+    [self.navigationController popViewControllerAnimated:NO];
+}
+- (void)backPopAct{
+    [self hideTabBar];
+    
+    //withRootView *cont=[[withRootView alloc] init];
+    [self.navigationController popViewControllerAnimated:YES];
+    //self.tabBarController.tabBar.hidden = NO; 
+    self.tabBarController.selectedIndex = 1;
+}
+-(void)jsonLoad{
 
+    NSMutableArray *valueData=[NSMutableArray array];
+    [valueData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%d",uidx],@"uidx", nil]];
+    if(uidx==0){
+        [valueData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%@",[[GlobalStn sharedSingleton] ukey]],@"ukey", nil]];
+    }
+
+    CGRect frame=CGRectMake(220.0, 10.0, 80.0, 20.0);
+    
+    progressbar=[[HttpWrapper alloc] requestUrl:NEARBY_GROUP_URL values:valueData progressBarFrame:(CGRect)frame image:nil loc:nil delegate:self];
+    [self.scrollView addSubview:progressbar];
+}
+- (void)httpProgBar:(HttpWrapper *)httpProgBar didFinishWithData:(NSData *)fileData{
+    id stringReply;
+    stringReply = (NSString *)[[NSString alloc] initWithData:fileData encoding:NSUTF8StringEncoding];
+    progressbar.hidden=YES;
+    self.jsonArray=[stringReply JSONValue];
+    [self initImageView];
+    NSLog(@"wi ---- %@",stringReply);
+}
+- (void)httpProgBar:(HttpWrapper *)httpProgBar didFailWithError:(NSError *)error{
+    NSLog(@"%@", error);
+}
+- (void)httpBarUpdated:(HttpWrapper *)httpProgBar{
+    
+}
 -(void)initImageView{
     pageCnt = [self.jsonArray count];
- 
+    
     pageControl=[[UIPageControl alloc] init];
-    pageControl.frame = CGRectMake( 0, self.view.bounds.size.height - 30, 320, 30 );
+    pageControl.frame = CGRectMake(10.0,scrollView.frame.size.height - 15.0, scrollView.frame.size.width, 15.0 );
     [pageControl addTarget:self
-                     action:@selector(pageControlDidChange:)
-           forControlEvents:UIControlEventValueChanged];
+                    action:@selector(changePage:)
+          forControlEvents:UIControlEventValueChanged];
     pageControl.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
     
- 
     pageControl.currentPage = 0;
-    pageControl.backgroundColor = [UIColor blackColor];
-    pageControl.numberOfPages = 5;
+    pageControl.backgroundColor = [UIColor clearColor];
+    pageControl.numberOfPages = pageCnt;
     
+    [self.view addSubview:pageControl];
     
-    [scrollView bringSubviewToFront:pageControl];
-   
-
     NSMutableArray *controllers = [[NSMutableArray alloc] init];
     for (unsigned i = 0; i < pageCnt; i++)
     {
@@ -168,13 +174,12 @@ const NSUInteger kFNumImages		= 1;
     self.viewControllers = controllers;
     [controllers release];
     
-       scrollView.contentSize = CGSizeMake(scrollView.frame.size.width * pageCnt, scrollView.frame.size.height);
-    [scrollView addSubview:pageControl];
-    
-
-
-
+    scrollView.contentSize = CGSizeMake(scrollView.frame.size.width * pageCnt, scrollView.frame.size.height);
+    //[scrollView addSubview:pageControl];
+    [self loadScrollViewWithPage:0];
+    [self loadScrollViewWithPage:1];
 }
+
 
 - (void)loadScrollViewWithPage:(int)page
 {
@@ -191,7 +196,6 @@ const NSUInteger kFNumImages		= 1;
         [viewControllers replaceObjectAtIndex:page withObject:controller];
         [controller release];
     }
-
     if (controller.view.superview == nil)
     {
         CGRect frame = scrollView.frame;
@@ -202,13 +206,10 @@ const NSUInteger kFNumImages		= 1;
         
         //NSDictionary *numberItem = [self.jsonArray objectAtIndex:page];
         //controller.imgUrl = [[self.jsonArray objectAtIndex:page] objectForKey:@"img"];
-        [controller setImage:[[self.jsonArray objectAtIndex:page] objectForKey:@"img"]];
+        [controller setImage:[[self.jsonArray objectAtIndex:page] objectForKey:@"thumb"]];
         controller.numberTitle.text = [self.jsonArray objectAtIndex:page];
     }
 }
-
-
-
 - (void)scrollViewDidScroll:(UIScrollView *)sender
 {
     if (pageControlUsed)
@@ -223,7 +224,6 @@ const NSUInteger kFNumImages		= 1;
     [self loadScrollViewWithPage:page - 1];
     [self loadScrollViewWithPage:page];
     [self loadScrollViewWithPage:page + 1];
-
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
@@ -236,7 +236,7 @@ const NSUInteger kFNumImages		= 1;
     pageControlUsed = NO;
 }
 
-- (IBAction)changePage:(id)sender
+- (void)changePage:(id)sender
 {
     int page = pageControl.currentPage;
 
@@ -343,7 +343,7 @@ const NSUInteger kFNumImages		= 1;
 - (void)dealloc {
     [profileView release];
     [jsonArray release];
-    [bigImageView release];
+    //[bigImageView release];
     [scrollView release];
     [super dealloc];
 }

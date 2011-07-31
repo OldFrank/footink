@@ -367,9 +367,9 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info {
     [self AddAuthRecord];
     
    
-    PhotoRoot *cont=[[PhotoRoot alloc] init];
-    [self.navigationController popToViewController:cont animated:YES];
-    //self.tabBarController.selectedIndex=0;
+    //PhotoRoot *cont=[[PhotoRoot alloc] init];
+    //[self.navigationController popToViewController:cont animated:YES];
+    self.tabBarController.selectedIndex=0;
 }
 - (void)httpProgBar:(HttpWrapper *)httpProgBar didFailWithError:(NSError *)error{
     

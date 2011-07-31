@@ -62,8 +62,7 @@
 
 -(void)layoutScrollImages;
 -(void)setData:(NSDictionary *)dict sect:(int)row;
-- (void)showAlert:(NSString *)msg;
-- (void) hideAlert;
+
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
 -(UIImage *)resizeImage:(UIImage *)image width:(float)resizeWidth height:(float)resizeHeight;
 - (UIImage*) maskImage:(UIImage *)image withMask:(UIImage *)maskImage;
@@ -77,5 +76,9 @@
 -(void)commentSubmit:(id)sender;
 -(BOOL)lovedSubmit:(id)sender;
 -(BOOL)chkLoved:(int)cnt;
+-(BOOL)jsonLoad;
+- (void)loadingIndicator;
+-(void)stopIndicator;
+-(void)networkError;
 @end
 

@@ -172,7 +172,7 @@
 		5DAE241713D212600036BED5 /* withCircle.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE23E813D212600036BED5 /* withCircle.m */; };
 		5DAE241813D212600036BED5 /* withRootCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE23EA13D212600036BED5 /* withRootCell.m */; };
 		5DAE241913D212600036BED5 /* withRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE23EC13D212600036BED5 /* withRootView.m */; };
-		5DAE241A13D212600036BED5 /* withViewcontroller.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE23EE13D212600036BED5 /* withViewcontroller.m */; };
+		5DAE241A13D212600036BED5 /* withGroupController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE23EE13D212600036BED5 /* withGroupController.m */; };
 		5DAE242A13D215140036BED5 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DAE241D13D215130036BED5 /* AVFoundation.framework */; };
 		5DAE242B13D215140036BED5 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DAE241E13D215130036BED5 /* CFNetwork.framework */; };
 		5DAE242C13D215140036BED5 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DAE241F13D215130036BED5 /* CoreData.framework */; };
@@ -196,7 +196,6 @@
 		5DE685AB13D829C900A7B653 /* fx-film-mask.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 5DE685A613D829C900A7B653 /* fx-film-mask.jpg */; };
 		5DE685AC13D829C900A7B653 /* fx-film-nostalgia-brown.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 5DE685A713D829C900A7B653 /* fx-film-nostalgia-brown.jpg */; };
 		5DE685AD13D829C900A7B653 /* fx-film-nostalgia-stone.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 5DE685A813D829C900A7B653 /* fx-film-nostalgia-stone.jpg */; };
-		5DE685B013D82AE900A7B653 /* HttpUploadWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DE685AF13D82AE900A7B653 /* HttpUploadWrapper.m */; };
 		5DE685B313D82EF000A7B653 /* photoSendingController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DE685B213D82EF000A7B653 /* photoSendingController.m */; };
 		5DE685B613D834C600A7B653 /* photoSendingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DE685B513D834C500A7B653 /* photoSendingCell.m */; };
 		5DE685C113D95D7600A7B653 /* photoSpotView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DE685C013D95D7500A7B653 /* photoSpotView.m */; };
@@ -459,8 +458,8 @@
 		5DAE23EA13D212600036BED5 /* withRootCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = withRootCell.m; path = photoPicker/withRootCell.m; sourceTree = "<group>"; };
 		5DAE23EB13D212600036BED5 /* withRootView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = withRootView.h; path = photoPicker/withRootView.h; sourceTree = "<group>"; };
 		5DAE23EC13D212600036BED5 /* withRootView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = withRootView.m; path = photoPicker/withRootView.m; sourceTree = "<group>"; };
-		5DAE23ED13D212600036BED5 /* withViewcontroller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = withViewcontroller.h; path = photoPicker/withViewcontroller.h; sourceTree = "<group>"; };
-		5DAE23EE13D212600036BED5 /* withViewcontroller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = withViewcontroller.m; path = photoPicker/withViewcontroller.m; sourceTree = "<group>"; };
+		5DAE23ED13D212600036BED5 /* withGroupController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = withGroupController.h; path = photoPicker/withGroupController.h; sourceTree = "<group>"; };
+		5DAE23EE13D212600036BED5 /* withGroupController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = withGroupController.m; path = photoPicker/withGroupController.m; sourceTree = "<group>"; };
 		5DAE241D13D215130036BED5 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		5DAE241E13D215130036BED5 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		5DAE241F13D215130036BED5 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -486,8 +485,6 @@
 		5DE685A613D829C900A7B653 /* fx-film-mask.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "fx-film-mask.jpg"; path = "photoPicker/fx-film-mask.jpg"; sourceTree = "<group>"; };
 		5DE685A713D829C900A7B653 /* fx-film-nostalgia-brown.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "fx-film-nostalgia-brown.jpg"; path = "photoPicker/fx-film-nostalgia-brown.jpg"; sourceTree = "<group>"; };
 		5DE685A813D829C900A7B653 /* fx-film-nostalgia-stone.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "fx-film-nostalgia-stone.jpg"; path = "photoPicker/fx-film-nostalgia-stone.jpg"; sourceTree = "<group>"; };
-		5DE685AE13D82AE900A7B653 /* HttpUploadWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpUploadWrapper.h; sourceTree = "<group>"; };
-		5DE685AF13D82AE900A7B653 /* HttpUploadWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpUploadWrapper.m; sourceTree = "<group>"; };
 		5DE685B113D82EF000A7B653 /* photoSendingController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = photoSendingController.h; sourceTree = "<group>"; };
 		5DE685B213D82EF000A7B653 /* photoSendingController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = photoSendingController.m; sourceTree = "<group>"; };
 		5DE685B413D834C500A7B653 /* photoSendingCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = photoSendingCell.h; sourceTree = "<group>"; };
@@ -561,8 +558,10 @@
 				5DBC7DFF13DEC76400579243 /* WithRootViewController.m */,
 				5DAE23EB13D212600036BED5 /* withRootView.h */,
 				5DAE23EC13D212600036BED5 /* withRootView.m */,
-				5DAE23ED13D212600036BED5 /* withViewcontroller.h */,
-				5DAE23EE13D212600036BED5 /* withViewcontroller.m */,
+				5DAE23ED13D212600036BED5 /* withGroupController.h */,
+				5DAE23EE13D212600036BED5 /* withGroupController.m */,
+				5DAE23AA13D212600036BED5 /* pagingViewController.h */,
+				5DAE23AB13D212600036BED5 /* pagingViewController.m */,
 				5DAE23E513D212600036BED5 /* withAddView.h */,
 				5DAE23E613D212600036BED5 /* withAddView.m */,
 				5DAE23E713D212600036BED5 /* withCircle.h */,
@@ -635,8 +634,6 @@
 				5DAE238513D2123D0036BED5 /* GlobalStn.m */,
 				5DAE238613D2123D0036BED5 /* gradientView.h */,
 				5DAE238713D2123D0036BED5 /* gradientView.m */,
-				5DE685AE13D82AE900A7B653 /* HttpUploadWrapper.h */,
-				5DE685AF13D82AE900A7B653 /* HttpUploadWrapper.m */,
 				5DF23C1413D556BC0092FC59 /* HttpWrapper.h */,
 				5DF23C1513D556BC0092FC59 /* HttpWrapper.m */,
 			);
@@ -713,8 +710,6 @@
 				5DAE236813D2123D0036BED5 /* AddViewController.h */,
 				5DAE236913D2123D0036BED5 /* AddViewController.m */,
 				5DAE241B13D2126D0036BED5 /* spot */,
-				5DAE23AA13D212600036BED5 /* pagingViewController.h */,
-				5DAE23AB13D212600036BED5 /* pagingViewController.m */,
 				5D04BDF413D243F400F767AC /* personal */,
 				5D04BDF313D2439900F767AC /* feed */,
 				5DAE23C513D212600036BED5 /* route.csv */,
@@ -923,6 +918,8 @@
 		5DAE241B13D2126D0036BED5 /* spot */ = {
 			isa = PBXGroup;
 			children = (
+				5DAE23D913D212600036BED5 /* SpotListViewController.h */,
+				5DAE23DA13D212600036BED5 /* SpotListViewController.m */,
 				5DAE238113D2123D0036BED5 /* FindMeViewController.h */,
 				5DAE238213D2123D0036BED5 /* FindMeViewController.m */,
 				5DAE238313D2123D0036BED5 /* FindMeViewController.xib */,
@@ -951,8 +948,6 @@
 				5DAE23D613D212600036BED5 /* SpotCategoryView.m */,
 				5DAE23D713D212600036BED5 /* SpotInkletSubmit.h */,
 				5DAE23D813D212600036BED5 /* SpotInkletSubmit.m */,
-				5DAE23D913D212600036BED5 /* SpotListViewController.h */,
-				5DAE23DA13D212600036BED5 /* SpotListViewController.m */,
 				5DAE23DB13D212600036BED5 /* SpotSubmitView.h */,
 				5DAE23DC13D212600036BED5 /* SpotSubmitView.m */,
 				5DAE23DF13D212600036BED5 /* tripMapRouteViewController.h */,
@@ -1226,12 +1221,11 @@
 				5DAE241713D212600036BED5 /* withCircle.m in Sources */,
 				5DAE241813D212600036BED5 /* withRootCell.m in Sources */,
 				5DAE241913D212600036BED5 /* withRootView.m in Sources */,
-				5DAE241A13D212600036BED5 /* withViewcontroller.m in Sources */,
+				5DAE241A13D212600036BED5 /* withGroupController.m in Sources */,
 				5D04BE1313D364E600F767AC /* Filters.m in Sources */,
 				5D04BE7113D3C35200F767AC /* photoEditController.m in Sources */,
 				5DF23C1313D530660092FC59 /* Badges.m in Sources */,
 				5DF23C1613D556BD0092FC59 /* HttpWrapper.m in Sources */,
-				5DE685B013D82AE900A7B653 /* HttpUploadWrapper.m in Sources */,
 				5DE685B313D82EF000A7B653 /* photoSendingController.m in Sources */,
 				5DE685B613D834C600A7B653 /* photoSendingCell.m in Sources */,
 				5DE685C113D95D7600A7B653 /* photoSpotView.m in Sources */,

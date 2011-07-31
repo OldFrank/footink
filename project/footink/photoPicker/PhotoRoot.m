@@ -55,7 +55,7 @@ const CGFloat SectionHeaderHeight = 26.0;
     
     self=[super init];
     if(self!=nil){
-        self.title=@"Foot Ink";
+        self.title=@"Feeds";
     }
     return self;
 }
@@ -104,7 +104,7 @@ const CGFloat SectionHeaderHeight = 26.0;
          self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
          */
         
-        UIView* container = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0,80.0, 40.0)];
+        /*UIView* container = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0,80.0, 40.0)];
         
         UIButton *button =  [[UIButton alloc] init];
         [button setImage:[UIImage imageNamed:@"list_normal.png"] forState:UIControlStateNormal];
@@ -128,7 +128,7 @@ const CGFloat SectionHeaderHeight = 26.0;
         
         self.navigationItem.rightBarButtonItem = item;
         [item release];
-        
+        */
         
         //[self loadingAlert];
         nindex=0; ///클릭된 indexpath.row 
@@ -138,9 +138,11 @@ const CGFloat SectionHeaderHeight = 26.0;
         self.photoTable=[[[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 360.0) style:UITableViewStylePlain] autorelease];
         self.photoTable.dataSource=self;
         self.photoTable.delegate=self;
+        self.photoTable.separatorStyle = UITableViewCellSeparatorStyleNone;
         [self.view addSubview:self.photoTable];
         
-
+        [self loadingIndicator];
+    
         if (_refreshHeaderView == nil) {
             
             EGORefreshTableHeaderView *view = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, 0.0f - self.photoTable.bounds.size.height, self.view.frame.size.width, self.photoTable.bounds.size.height)];
@@ -212,27 +214,44 @@ const CGFloat SectionHeaderHeight = 26.0;
     }
     return status;
 }
-- (void)loadingAlert{
-    UIActivityIndicatorView *progressView = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(50.0, 90, 30, 30)];
-    progressView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
-    progressView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin |
-                                     UIViewAutoresizingFlexibleRightMargin |
-                                     UIViewAutoresizingFlexibleTopMargin |
-                                     UIViewAutoresizingFlexibleBottomMargin);
+-(void)networkError{
+    [self stopIndicator];
+    UIView *errorMsg=[[UIView alloc] initWithFrame:CGRectMake(50.0, 50.0, 220.0, 80.0)];
+    errorMsg.backgroundColor=[UIColor whiteColor];
+    errorMsg.tag=400;
     
-    [self showAlert:@"Loading"];                 
-    [alert addSubview:progressView];
-    [progressView startAnimating];
+    UILabel *msgLabel=[[UILabel alloc] initWithFrame:CGRectMake(10, 10, 190, 30.0)];
+    msgLabel.text=@"인터넷이 연결되지 않았습니다.";
+    msgLabel.textAlignment=UITextAlignmentCenter;
+    msgLabel.textColor=[UIColor grayColor];
+    msgLabel.font=[UIFont fontWithName:@"appleGothic" size:11.0f];
+    msgLabel.backgroundColor=[UIColor clearColor];
+    [errorMsg addSubview:msgLabel];
     
+    UIButton *retryBtn=[[UIButton alloc] initWithFrame:CGRectMake(30.0,30.0,100.0,30.0)];
+    [retryBtn addTarget:nil action:@selector(jsonLoad) forControlEvents:UIControlEventTouchUpInside];
+    [retryBtn setTitle:@"재시도" forState:UIControlStateNormal]; 
+    [retryBtn setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+    [errorMsg addSubview:retryBtn];
+    [self.photoTable addSubview:errorMsg];
+    [errorMsg release];
+    [retryBtn release];
 }
--(void)jsonLoad
+-(BOOL)jsonLoad
 {
+    NSLog(@"jsonLoad");
     if ([self checkNetwork]==0) {
-        [self hideAlert];
-        [self showAlert:@"네트워크오류."];
+        //[self hideAlert];
+        //[self showAlert:@"네트워크오류."];
+        
+        if(self.jsonArray==nil)
+            [self networkError];
+        
+        return FALSE;
     }else{
-       
-       
+        [[self.photoTable viewWithTag:400] removeFromSuperview];
+        //return TRUE;
+    }
        NSString *url;
             
        url=@"http://footink.com/user/t";
@@ -270,7 +289,9 @@ const CGFloat SectionHeaderHeight = 26.0;
             
        if(statusCode==200) {
             self.jsonArray=[stringReply JSONValue];
-           NSLog(@"%@",self.jsonArray);
+           
+           [self stopIndicator];
+           [self.photoTable reloadData];
             if(self.jsonArray==nil)
                  NSLog(@"parsing error");
                 
@@ -279,7 +300,8 @@ const CGFloat SectionHeaderHeight = 26.0;
                 NSLog(@"http 오류.");
         }
         //timer = [[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(jsonBackground) userInfo:nil repeats:NO]retain];
-    }
+    
+    return TRUE;
 }
 - (void)OnTimer:(NSString *)type
 {
@@ -293,16 +315,36 @@ const CGFloat SectionHeaderHeight = 26.0;
 
     [self.photoTable reloadData];
 }
-- (void)showAlert:(NSString *)msg{
-	UIImage *backgroundImage = [UIImage imageNamed:@"alertBack.png"];
-	alert = [[PopAlertView alloc] initWithImage:backgroundImage text:NSLocalizedString(msg, nil)];
-	[alert show];
-
+- (void)loadingIndicator{
+    UIActivityIndicatorView *indicatorView = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(35.0, 35.0, 30.0, 30.0)];
+    indicatorView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
+    indicatorView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin |
+                                      UIViewAutoresizingFlexibleRightMargin |
+                                      UIViewAutoresizingFlexibleTopMargin |
+                                      UIViewAutoresizingFlexibleBottomMargin);
+    
+    indicatorView.hidesWhenStopped = TRUE ;
+    
+    
+    UIView *loadingBack=[[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 100.0, 100.0)]; 
+    loadingBack.backgroundColor=[UIColor darkGrayColor];
+    loadingBack.tag = 300;
+    [self.photoTable addSubview:loadingBack];
+    [loadingBack addSubview:indicatorView];
+    [indicatorView startAnimating];
+    
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:0.5];
+    [UIView setAnimationDelegate:self];
+    [UIView setAnimationDidStopSelector:@selector(animation:finished:context:)];
+    [loadingBack setCenter:CGPointMake(160,160)];
+    [UIView commitAnimations];
+}
+-(void)stopIndicator{
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+    [[self.photoTable viewWithTag:300] removeFromSuperview];
 }
 
-- (void) hideAlert {
-	[alert dismissWithClickedButtonIndex:0 animated:YES];
-}
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	[alertView release];
@@ -424,7 +466,7 @@ const CGFloat SectionHeaderHeight = 26.0;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 
     //tableView.style = UITableViewStylePlain;
-    tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+    tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     tableView.separatorColor = [UIColor whiteColor];
     
     //NSLog(@"====%d",(int)[[self.jsonArray objectAtIndex:indexPath.section] count]);
@@ -737,17 +779,17 @@ const CGFloat SectionHeaderHeight = 26.0;
 - (void)reloadTableViewDataSource{
     //[self jsonLoad];
     //[self.tableView reloadData];
+    timer = [[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(jsonLoad) userInfo:@"food" repeats:NO]retain];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
 	_reloading = YES;
 	
 }
-
 - (void)doneLoadingTableViewData{
 	//  model should call this when its done loading
     
 	_reloading = NO;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 	[_refreshHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:self.photoTable];
-	
 }
 
 

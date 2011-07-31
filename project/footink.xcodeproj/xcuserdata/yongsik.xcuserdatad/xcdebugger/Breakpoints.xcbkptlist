@@ -9,11 +9,11 @@
          continueAfterRunningActions = "No"
          isPathRelative = "1"
          filePath = "footink/HttpWrapper.m"
-         timestampString = "333468143.188605"
+         timestampString = "333641676.506361"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "195"
-         endingLineNumber = "195"
+         startingLineNumber = "192"
+         endingLineNumber = "192"
          landmarkName = "@implementation HttpWrapper"
          landmarkType = "3">
       </FileBreakpoint>
@@ -23,11 +23,11 @@
          continueAfterRunningActions = "No"
          isPathRelative = "1"
          filePath = "footink/HttpWrapper.m"
-         timestampString = "333468143.188605"
+         timestampString = "333641676.506361"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "125"
-         endingLineNumber = "125"
+         startingLineNumber = "122"
+         endingLineNumber = "122"
          landmarkName = "-connection:didReceiveData:"
          landmarkType = "5">
       </FileBreakpoint>
@@ -37,11 +37,11 @@
          continueAfterRunningActions = "No"
          isPathRelative = "1"
          filePath = "footink/photoSpotView.m"
-         timestampString = "333454208.566625"
+         timestampString = "333740321.585325"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "162"
-         endingLineNumber = "162"
+         startingLineNumber = "153"
+         endingLineNumber = "153"
          landmarkName = "-dealloc"
          landmarkType = "5">
       </FileBreakpoint>

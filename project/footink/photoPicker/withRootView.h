@@ -11,9 +11,12 @@
 //#import <CoreLocation/CoreLocation.h>
 #import <MapKit/MapKit.h>
 #import "HttpWrapper.h"
+#import "Badges.h"
+#import "EGOImageView.h"
 
+@class Badges;
 @class EGOImageView;
-@interface withRootView : UIViewController <UINavigationControllerDelegate,UITableViewDelegate,UITableViewDataSource,CLLocationManagerDelegate,UIScrollViewDelegate,HttpWrapperDelegate>{
+@interface withRootView : UIViewController <UINavigationControllerDelegate,CLLocationManagerDelegate,UIScrollViewDelegate,HttpWrapperDelegate>{
 
     UIView *frontView;
 	UIView *hideView;
@@ -21,7 +24,7 @@
 	UIButton *toggleButton;
     UIButton *backButton;
     UIButton *cameraButton;
-    UITableView *recentGroup;
+
 
 	BOOL isUp;	
     CALayer *pulseLayer_;
@@ -37,14 +40,22 @@
     UILabel *timeLabel;
     
     NSMutableArray *jsonArray;
+    NSMutableArray *jsonNearArray;
     UIImageView *gimageView;
     HttpWrapper *progressbar;
     
-    
+   EGOImageView *recentImageView;
+    Badges *nearBadge;
     BOOL CLCHK;
+    
+    UIScrollView *nowScroll;
+    UIScrollView *recentGroup;
+    
+    int nowScrollImageCount;
 }
 
-
+@property (nonatomic, retain) UIScrollView *recentGroup;
+@property (nonatomic, retain) UIScrollView *nowScroll;
 @property (nonatomic, retain) UIView *frontView;
 @property (nonatomic, retain) UIView *hideView;
 @property (nonatomic, retain) UIView *newTabBar;
@@ -54,24 +65,32 @@
 @property (nonatomic, retain) UILabel *yearLabel;
 @property (nonatomic, retain) UILabel *monthLabel;
 @property (nonatomic, retain) UILabel *timeLabel;
-@property (nonatomic, retain) UITableView *recentGroup;
 
 @property (nonatomic, retain) UIImageView *gimageView;
+
 
 @property (nonatomic, retain) CLLocationManager *locationManager;
 @property (nonatomic, retain) CLLocation *newUserLocation;
 @property (nonatomic, retain) CATextLayer *nearCountlabel;
 @property (nonatomic, retain) NSMutableArray *jsonArray;
+@property (nonatomic, retain) NSMutableArray *jsonNearArray;
 
-- (void)swipedScreen:(UISwipeGestureRecognizer *)recognizer;
-- (IBAction)moveToUpAndDown;
-- (void)readyCAAni;
-- (void)backAct;
+-(void)swipedScreen:(UISwipeGestureRecognizer *)recognizer;
+-(IBAction)moveToUpAndDown;
+-(void)readyCAAni;
+-(void)backAct;
 -(void)initSview;
--(void)nearAsync;
+-(BOOL)nearAsync;
 -(void)onCamera;
 -(void)removeView;
--(void)groupPush;
 
+-(void)withTabBar;
+-(void)hideTabBar;
+-(void)withGroupTabBar;
+-(void)networkError;
+- (int)checkNetwork;
+-(void)rectImages;
+-(void)groupPush:(id)sender;
+- (void)nowPhotoScroll;
 
 @end

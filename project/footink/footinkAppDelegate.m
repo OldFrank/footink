@@ -88,6 +88,7 @@
    //     return NO;
    // }
    // return YES;
+    return YES;
 }
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
     

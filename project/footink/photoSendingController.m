@@ -162,25 +162,28 @@ const CGFloat CROP_IMAGE_RECT_HEIGHT	= 300.0;
     
 
     NSMutableArray *valueData=[NSMutableArray array];
+    NSString *withchk;
+    if([[GlobalStn sharedSingleton] camPosition]==1){
+        withchk=@"YES";
+    }else{
+        withchk=@"NO";
+    }
+    [valueData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:withchk,@"with", nil]];
     [valueData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:[[GlobalStn sharedSingleton] uname],@"uid", nil]];
     [valueData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:[[GlobalStn sharedSingleton] ukey],@"privatekey", nil]];
     [valueData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:caption.text,@"caption", nil]];
     [valueData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:spotName.text,@"spotname", nil]];
-    [valueData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:spotLat,@"lat", nil]];
-    [valueData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:spotLng,@"lng", nil]];
     
-    CLLocationManager *cmanager=[[CLLocationManager alloc] init];
-    [cmanager setDesiredAccuracy:kCLLocationAccuracyBest];
-    [cmanager setDelegate:self];
+    if(spotLat!=nil || spotLng!=nil){
+        [valueData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:spotLat,@"lat", nil]];
+        [valueData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:spotLng,@"lng", nil]];
+    }
     
-    CLLocation *coord=[cmanager location];
-    [cmanager release];
-
     CGRect progressframe=CGRectMake(10.0, 5.0, 200.0, 20.0);
-    progressbar=[[HttpWrapper alloc] requestUrl:DATA_SEND_URL values:valueData progressBarFrame:(CGRect)progressframe image:imageData loc:coord delegate:self];
+    progressbar=[[HttpWrapper alloc] requestUrl:DATA_SEND_URL values:valueData progressBarFrame:(CGRect)progressframe image:imageData loc:nil delegate:self];
     [self.progressBack addSubview:progressbar];
 
-    NSString *string = self.caption.text;
+   /* NSString *string = self.caption.text;
     NSLog(@"save %d",[string length]);
     
     if([string length] > 0){
@@ -193,7 +196,7 @@ const CGFloat CROP_IMAGE_RECT_HEIGHT	= 300.0;
         //[alert addButtonWithTitle:@"No"];
         [alert show];
         [alert release];
-    }
+    }*/
 }
 -(id)savefilmFxEffect:(int)selTag{
     UIImage *img=[self loadImage:@"temp"];

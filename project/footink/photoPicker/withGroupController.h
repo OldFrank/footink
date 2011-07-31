@@ -8,12 +8,13 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
-#import <MapKit/MapKit.h>
 #import <CoreLocation/CoreLocation.h>
+#import "EGOImageView.h"
+#import "HttpWrapper.h"
 
 @class EGOImageView;
 
-@interface withViewcontroller : UIViewController <UIScrollViewDelegate,UIApplicationDelegate,CLLocationManagerDelegate>{
+@interface withGroupController : UIViewController <UIScrollViewDelegate,UIApplicationDelegate,CLLocationManagerDelegate,HttpWrapperDelegate>{
 
     UIScrollView *scrollView;
     UIScrollView *fscrollView;
@@ -24,18 +25,17 @@
 
     EGOImageView *profileView;
     int selectedSegment;
-    
+    HttpWrapper *progressbar;
     NSMutableArray *viewControllers;
-    
-    EGOImageView *bigImageView;
+
     UIPageControl *pageControl;
     BOOL pageControlUsed;
     int pageCnt;
     int curPage;
     int oldPage;
+    int uidx;
+    
 }
-
-
 @property (nonatomic, retain) NSMutableArray *jsonArray;
 @property (nonatomic, retain) NSMutableArray *viewControllers;
 @property (nonatomic, retain) UIScrollView *scrollView;
@@ -43,13 +43,16 @@
 @property (nonatomic, retain) UIScrollView *bodyScrollView;
 @property (nonatomic, retain) UIPageControl *pageControl;
 
+@property (nonatomic, assign) int uidx;
 
--(void)jsonLoad:(NSString *)types;
--(void)jsonDummy;
-
+-(void)jsonLoad;
 -(void)initImageView;
 -(void)loadScrollViewWithPage:(int)page;
--(IBAction)changePage:(id)sender;
-
+-(void)changePage:(id)sender;
+-(void)hidePrevTabBar;
+-(void)withGroupTabBar;
+-(void)hideTabBar;
+-(void)backPopAct;
+-(void)onCamera;
 @end
 
